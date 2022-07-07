@@ -58,6 +58,6 @@
 ```
 ### Indicaciones para Base de datos:
 
-Ejecutar el contenido del archivo `ejecutar.sql` en `apps/script-bd/` (en el orden indicado) en la **consola de postgres** o un **DBMS**
+Ejecutar el contenido del archivo `ejecutar.sql` ubicado en `apps/script-bd/` o [aqui](https://github.com/cpaucarc/sis_capacitaciones_ccead/blob/main/apps/scripts-bd/ejecutar.sql) (en el orden indicado) en la **consola de postgres** o un **DBMS**
 
 - Nota: No se recomienda **HeidiSQL** porque arroja error al no reconocer los caracteres $$
