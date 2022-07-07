@@ -853,7 +853,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         w, h = cabecera2.wrap(400, 0)
         cabecera2.drawOn(self.canvas, 105, 728 - h)
         logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
-        self.canvas.drawImage(ImageReader(logo_unasam), 260, 565, 90, 112)
+        self.canvas.drawImage(ImageReader(logo_unasam), 262, 565, 85, 105)
         titulo = Paragraph('CERTIFICADO', style=self.style2)
         data2[0] = [titulo]
         ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -918,7 +918,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         w, h = parrafo1.wrap(460, 0)
         parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-        self.canvas.setFont('Helvetica', 10)
+        self.canvas.setFont('Times-Roman', 12)
         self.canvas.drawString(70, 350, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day,
                                                                          mes[self.fecha_culminado.month],
                                                                          self.fecha_culminado.year))
@@ -947,9 +947,9 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
                 tt.drawOn(self.canvas, 65 + cx, 250)
             else:
                 tt.drawOn(self.canvas, 50 + cx, 250)
-            data4[0] = ['---------------------------------------------------------']
-            data4[1] = [f.firmante]
-            data4[2] = [f.get_tipo_firma_display()]
+            data4[0] = ['']
+            data4[1] = [''] # f.firmante
+            data4[2] = [''] # f.get_tipo_firma_display()
             tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
             tt.setStyle(table_style)
             w, h = tt.wrap(0, 0)
@@ -982,48 +982,49 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         codigo_barra.value = n_correlativo
         codigo_barra.drawOn(self.canvas, x=215, y=745)
         self.canvas.drawString(278, 730, n_correlativo)
-        if len(self.temarios) == 1:
-            temas = self.temarios[0].split('\n')
-            data1 = [[]] * (len(temas) + 1)
-            conta += 1
-            mod = Paragraph('Temario', style=self.style)
-            data1[0] = [mod]
-            for x in range(1, len(temas) + 1):
-                data1[x] = [temas[x - 1].strip()]
-            tbl = Table(data=data1, rowHeights=30, repeatCols=1, colWidths=[513])
-            tbl.setStyle(table_style1)
-            w, h = tbl.wrap(0, 0)
-            tbl.drawOn(self.canvas, 50 + cxx, 700 - h)
-            cxx += 20
-            self.canvas.showPage()
-        else:
-            for t in self.temarios:
-                temas = t.split('\n')
+
+        if len(self.temarios) > 0 and len(self.temarios[0].strip()) > 0:
+            if len(self.temarios) == 1:
+                temas = self.temarios[0].split('\n')
                 data1 = [[]] * (len(temas) + 1)
                 conta += 1
-                mod = Paragraph('Temario del Módulo {}'.format(conta), style=self.style)
+                mod = Paragraph('Temario', style=self.style)
                 data1[0] = [mod]
-                trow = 20
-                espace = 0
-                tem = 0
                 for x in range(1, len(temas) + 1):
-                    te3 = temas[x - 1].strip()
-                    tem += 1
-                    if len(temas[x - 1].strip()) >= 90:
-                        trow = 30
-                        espace = 30
-                        te = temas[x - 1].strip()[:90]
-                        pos_te = te.rfind(' ')
-                        te1 = temas[x - 1].strip()[:pos_te]
-                        te2 = temas[x - 1].strip()[pos_te:]
-                        te3 = '{}\n  {}'.format(te1, te2)
-                    data1[x] = [te3]
-                tbl = Table(data=data1, rowHeights=trow, repeatCols=1, colWidths=[513])
+                    data1[x] = [temas[x - 1].strip()]
+                tbl = Table(data=data1, rowHeights=30, repeatCols=1, colWidths=[513])
                 tbl.setStyle(table_style1)
                 w, h = tbl.wrap(0, 0)
-                tbl.drawOn(self.canvas, 50, (700 - h) - cxx + espace)
-                cxx += 50 + (tem * 20)
-            self.canvas.showPage()
+                tbl.drawOn(self.canvas, 50 + cxx, 700 - h)
+                cxx += 20
+            else:
+                for t in self.temarios:
+                    temas = t.split('\n')
+                    data1 = [[]] * (len(temas) + 1)
+                    conta += 1
+                    mod = Paragraph('Temario del Módulo {}'.format(conta), style=self.style)
+                    data1[0] = [mod]
+                    trow = 20
+                    espace = 0
+                    tem = 0
+                    for x in range(1, len(temas) + 1):
+                        te3 = temas[x - 1].strip()
+                        tem += 1
+                        if len(temas[x - 1].strip()) >= 90:
+                            trow = 30
+                            espace = 30
+                            te = temas[x - 1].strip()[:90]
+                            pos_te = te.rfind(' ')
+                            te1 = temas[x - 1].strip()[:pos_te]
+                            te2 = temas[x - 1].strip()[pos_te:]
+                            te3 = '{}\n  {}'.format(te1, te2)
+                        data1[x] = [te3]
+                    tbl = Table(data=data1, rowHeights=trow, repeatCols=1, colWidths=[513])
+                    tbl.setStyle(table_style1)
+                    w, h = tbl.wrap(0, 0)
+                    tbl.drawOn(self.canvas, 50, (700 - h) - cxx + espace)
+                    cxx += 50 + (tem * 20)
+        self.canvas.showPage()
 
 
 class BandejaValidacionView(LoginRequiredMixin, BaseLogin, TemplateView):
@@ -1600,7 +1601,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             w, h = cabecera2.wrap(400, 0)
             cabecera2.drawOn(self.canvas, 105, 728 - h)
             logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
-            self.canvas.drawImage(ImageReader(logo_unasam), 260, 565, 90, 112)
+            self.canvas.drawImage(ImageReader(logo_unasam), 262, 565, 85, 105)
             titulo = Paragraph('CERTIFICADO', style=self.style2)
             data2[0] = [titulo]
             ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -1665,7 +1666,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             w, h = parrafo1.wrap(460, 0)
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-            self.canvas.setFont('Helvetica', 10)
+            self.canvas.setFont('Times-Roman', 12)
             self.canvas.drawString(70, 350, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day,
                                                                              mes[self.fecha_culminado.month],
                                                                              self.fecha_culminado.year))
@@ -1693,9 +1694,9 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                     tt.drawOn(self.canvas, 65 + cx, 250)
                 else:
                     tt.drawOn(self.canvas, 50 + cx, 250)
-                data4[0] = ['---------------------------------------------------------']
-                data4[1] = [f.firmante]
-                data4[2] = [f.get_tipo_firma_display()]
+                data4[0] = ['']
+                data4[1] = [''] #f.firmante
+                data4[2] = [''] #f.get_tipo_firma_display()
                 tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
                 tt.setStyle(table_style)
                 w, h = tt.wrap(0, 0)
@@ -1723,54 +1724,56 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             w, h = ta.wrap(0, 0)
             ta.drawOn(self.canvas, 1, 4)
             self.canvas.showPage()
+
             cxx = 0
             conta = 0
             codigo_barra = code128.Code128(barWidth=1.2, barHeight=25)
             codigo_barra.value = n_correlativo
             codigo_barra.drawOn(self.canvas, x=215, y=745)
             self.canvas.drawString(278, 730, n_correlativo)
-            if len(self.temarios) == 1:
-                temas = self.temarios[0].split('\n')
-                data1 = [[]] * (len(temas) + 1)
-                conta += 1
-                mod = Paragraph('Temario', style=self.style)
-                data1[0] = [mod]
-                for x in range(1, len(temas) + 1):
-                    data1[x] = [temas[x - 1].strip()]
-                tbl = Table(data=data1, rowHeights=30, repeatCols=1, colWidths=[513])
-                tbl.setStyle(table_style1)
-                w, h = tbl.wrap(0, 0)
-                tbl.drawOn(self.canvas, 50 + cxx, 700 - h)
-                cxx += 20
-                self.canvas.showPage()
-            else:
-                for t in self.temarios:
-                    temas = t.split('\n')
+
+            if len(self.temarios) > 0 and len(self.temarios[0].strip()) > 0:
+                if len(self.temarios) == 1:
+                    temas = self.temarios[0].split('\n')
                     data1 = [[]] * (len(temas) + 1)
                     conta += 1
-                    mod = Paragraph('Temario del Módulo {}'.format(conta), style=self.style)
+                    mod = Paragraph('Temario', style=self.style)
                     data1[0] = [mod]
-                    trow = 20
-                    espace = 0
-                    tem = 0
                     for x in range(1, len(temas) + 1):
-                        te3 = temas[x - 1].strip()
-                        tem += 1
-                        if len(temas[x - 1].strip()) >= 90:
-                            trow = 30
-                            espace = 30
-                            te = temas[x - 1].strip()[:90]
-                            pos_te = te.rfind(' ')
-                            te1 = temas[x - 1].strip()[:pos_te]
-                            te2 = temas[x - 1].strip()[pos_te:]
-                            te3 = '{}\n  {}'.format(te1, te2)
-                        data1[x] = [te3]
-                    tbl = Table(data=data1, rowHeights=trow, repeatCols=1, colWidths=[513])
+                        data1[x] = [temas[x - 1].strip()]
+                    tbl = Table(data=data1, rowHeights=30, repeatCols=1, colWidths=[513])
                     tbl.setStyle(table_style1)
                     w, h = tbl.wrap(0, 0)
-                    tbl.drawOn(self.canvas, 50, (700 - h) - cxx + espace)
-                    cxx += 50 + (tem * 20)
-                self.canvas.showPage()
+                    tbl.drawOn(self.canvas, 50 + cxx, 700 - h)
+                    cxx += 20
+                else:
+                    for t in self.temarios:
+                        temas = t.split('\n')
+                        data1 = [[]] * (len(temas) + 1)
+                        conta += 1
+                        mod = Paragraph('Temario del Módulo {}'.format(conta), style=self.style)
+                        data1[0] = [mod]
+                        trow = 20
+                        espace = 0
+                        tem = 0
+                        for x in range(1, len(temas) + 1):
+                            te3 = temas[x - 1].strip()
+                            tem += 1
+                            if len(temas[x - 1].strip()) >= 90:
+                                trow = 30
+                                espace = 30
+                                te = temas[x - 1].strip()[:90]
+                                pos_te = te.rfind(' ')
+                                te1 = temas[x - 1].strip()[:pos_te]
+                                te2 = temas[x - 1].strip()[pos_te:]
+                                te3 = '{}\n  {}'.format(te1, te2)
+                            data1[x] = [te3]
+                        tbl = Table(data=data1, rowHeights=trow, repeatCols=1, colWidths=[513])
+                        tbl.setStyle(table_style1)
+                        w, h = tbl.wrap(0, 0)
+                        tbl.drawOn(self.canvas, 50, (700 - h) - cxx + espace)
+                        cxx += 50 + (tem * 20)
+            self.canvas.showPage()
 
 
 class EnvioCertificadoMultiCorreo(View):
@@ -2066,7 +2069,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             w, h = cabecera2.wrap(400, 0)
             cabecera2.drawOn(self.canvas, 105, 728 - h)
             logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
-            self.canvas.drawImage(ImageReader(logo_unasam), 260, 565, 90, 112)
+            self.canvas.drawImage(ImageReader(logo_unasam), 262, 565, 85, 105)
             titulo = Paragraph('CERTIFICADO', style=self.style2)
             data2[0] = [titulo]
             ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -2118,7 +2121,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             w, h = parrafo1.wrap(460, 0)
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-            self.canvas.setFont('Helvetica', 10)
+            self.canvas.setFont('Times-Roman', 12)
             self.canvas.drawString(70, 350, 'Huaraz, {} de {} de {}'.format(fecha_fin.day,
                                                                              mes[fecha_fin.month],
                                                                              fecha_fin.year))
@@ -2148,9 +2151,9 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                     tt.drawOn(self.canvas, 50 + cx, 250)
                 grado = dict(ABREVIATURA_GRADO).get(f.firmante.persona.grado_academico, '')
                 data4[0] = ['']
-                data4[1] = ['{} {}'.format(grado, f.firmante).title()]
-                data4[2] = [f.get_tipo_firma_display()]
-                data4[3] = [f.firmante.ambito.upper()]
+                data4[1] = [''] #'{} {}'.format(grado, f.firmante).title()
+                data4[2] = [''] #f.get_tipo_firma_display()
+                data4[3] = [''] #f.firmante.ambito.upper()
                 tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
                 tt.setStyle(table_style)
                 w, h = tt.wrap(0, 0)
@@ -2400,7 +2403,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             w, h = cabecera2.wrap(400, 0)
             cabecera2.drawOn(self.canvas, 105, 728 - h)
             logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
-            self.canvas.drawImage(ImageReader(logo_unasam), 260, 565, 90, 112)
+            self.canvas.drawImage(ImageReader(logo_unasam), 262, 565, 85, 105)
             titulo = Paragraph('CERTIFICADO', style=self.style2)
             data2[0] = [titulo]
             ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -2464,7 +2467,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             w, h = parrafo1.wrap(460, 0)
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-            self.canvas.setFont('Helvetica', 10)
+            self.canvas.setFont('Times-Roman', 12)
             self.canvas.drawString(70, 350, 'Huaraz, {} de {} de {}'.format(self.fecha_fin.day,
                                                                              mes[self.fecha_fin.month],
                                                                              self.fecha_fin.year))
@@ -2492,9 +2495,9 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                     tt.drawOn(self.canvas, 65 + cx, 250)
                 else:
                     tt.drawOn(self.canvas, 50 + cx, 250)
-                data4[0] = ['---------------------------------------------------------']
-                data4[1] = [f.firmante]
-                data4[2] = [f.get_tipo_firma_display()]
+                data4[0] = ['']
+                data4[1] = [''] # f.firmante
+                data4[2] = [''] # f.get_tipo_firma_display()
                 tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
                 tt.setStyle(table_style)
                 w, h = tt.wrap(0, 0)
@@ -2527,48 +2530,49 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             codigo_barra.value = n_correlativo
             codigo_barra.drawOn(self.canvas, x=215, y=745)
             self.canvas.drawString(278, 730, n_correlativo)
-            if len(self.temarios) == 1:
-                temas = self.temarios[0].split('\n')
-                data1 = [[]] * (len(temas) + 1)
-                conta += 1
-                mod = Paragraph('Temario', style=self.style)
-                data1[0] = [mod]
-                for x in range(1, len(temas) + 1):
-                    data1[x] = [temas[x - 1].strip()]
-                tbl = Table(data=data1, rowHeights=30, repeatCols=1, colWidths=[513])
-                tbl.setStyle(table_style1)
-                w, h = tbl.wrap(0, 0)
-                tbl.drawOn(self.canvas, 50 + cxx, 700 - h)
-                cxx += 20
-                self.canvas.showPage()
-            else:
-                for t in self.temarios:
-                    temas = t.split('\n')
+
+            if len(self.temarios) > 0 and len(self.temarios[0].strip()) > 0:
+                if len(self.temarios) == 1:
+                    temas = self.temarios[0].split('\n')
                     data1 = [[]] * (len(temas) + 1)
                     conta += 1
-                    mod = Paragraph('Temario del Módulo {}'.format(conta), style=self.style)
+                    mod = Paragraph('Temario', style=self.style)
                     data1[0] = [mod]
-                    trow = 30
-                    espace = 30
-                    tem = 0
                     for x in range(1, len(temas) + 1):
-                        te3 = temas[x - 1].strip()
-                        tem += 1
-                        if len(temas[x - 1].strip()) >= 90:
-                            trow = 30
-                            espace = 30
-                            te = temas[x - 1].strip()[:90]
-                            pos_te = te.rfind(' ')
-                            te1 = temas[x - 1].strip()[:pos_te]
-                            te2 = temas[x - 1].strip()[pos_te:]
-                            te3 = '{}\n  {}'.format(te1, te2)
-                        data1[x] = [te3]
-                    tbl = Table(data=data1, rowHeights=trow, repeatCols=1, colWidths=[513])
+                        data1[x] = [temas[x - 1].strip()]
+                    tbl = Table(data=data1, rowHeights=30, repeatCols=1, colWidths=[513])
                     tbl.setStyle(table_style1)
                     w, h = tbl.wrap(0, 0)
-                    tbl.drawOn(self.canvas, 50, (700 - h) - cxx + espace)
-                    cxx += 50 + (tem * 20)
-                self.canvas.showPage()
+                    tbl.drawOn(self.canvas, 50 + cxx, 700 - h)
+                    cxx += 20
+                else:
+                    for t in self.temarios:
+                        temas = t.split('\n')
+                        data1 = [[]] * (len(temas) + 1)
+                        conta += 1
+                        mod = Paragraph('Temario del Módulo {}'.format(conta), style=self.style)
+                        data1[0] = [mod]
+                        trow = 30
+                        espace = 30
+                        tem = 0
+                        for x in range(1, len(temas) + 1):
+                            te3 = temas[x - 1].strip()
+                            tem += 1
+                            if len(temas[x - 1].strip()) >= 90:
+                                trow = 30
+                                espace = 30
+                                te = temas[x - 1].strip()[:90]
+                                pos_te = te.rfind(' ')
+                                te1 = temas[x - 1].strip()[:pos_te]
+                                te2 = temas[x - 1].strip()[pos_te:]
+                                te3 = '{}\n  {}'.format(te1, te2)
+                            data1[x] = [te3]
+                        tbl = Table(data=data1, rowHeights=trow, repeatCols=1, colWidths=[513])
+                        tbl.setStyle(table_style1)
+                        w, h = tbl.wrap(0, 0)
+                        tbl.drawOn(self.canvas, 50, (700 - h) - cxx + espace)
+                        cxx += 50 + (tem * 20)
+            self.canvas.showPage()
 
 
 class EnvioCertificadoMultiCorreoMod(View):

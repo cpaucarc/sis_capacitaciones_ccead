@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import inlineformset_factory
 from apps.capacitacion.models import Capacitacion, ResponsableFirma, ActaAsistencia, Modulo, EquipoProyecto
-from apps.common.constants import CARGO_PROYECTO_CHOICES, EMISION_CERTIFICADO_UNICO, EMISION_CERTIFICADO_CHOICES
+from apps.common.constants import CARGO_PROYECTO_CHOICES, CANAL_CHOISES, EMISION_CERTIFICADO_UNICO, EMISION_CERTIFICADO_CHOICES
 
 
 class CapacitacionForm(forms.ModelForm):
@@ -17,8 +17,11 @@ class CapacitacionForm(forms.ModelForm):
         attrs={'class': 'form-control input-sm'}))
     beneficiarios = forms.CharField(label='Beneficiario', widget=forms.TextInput(
         attrs={'class': 'form-control input-sm'}), required=False)
-    canal_reunion = forms.CharField(label='Canal de la reunión', widget=forms.TextInput(
-        attrs={'class': 'form-control input-sm'}), required=False)
+    # canal_reunion = forms.CharField(label='Canal de la reunión', widget=forms.TextInput(
+    #     attrs={'class': 'form-control input-sm'}), required=False)
+    canal_reunion = forms.ChoiceField(required=True,
+                      choices=CANAL_CHOISES,
+                      widget=forms.Select(attrs={'class': 'form-control input-sm'}))
     objetivo = forms.CharField(
         label='Objetivos',
         widget=forms.Textarea(
