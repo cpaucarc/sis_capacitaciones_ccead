@@ -2097,12 +2097,8 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             al {} de {} de {} con un total de {} horas académicas.'''.format(self.miembro.get_cargo_display(),
                                            self.modulo.nombre,
                                            tipo_canal,
-                                            fecha_inicio.day,
-                                            mes[fecha_inicio.month],
-                                            fecha_inicio.year,
-                                            fecha_fin.day,
-                                            mes[fecha_fin.month],
-                                            fecha_fin.year,
+                                           fecha_inicio.day, mes[fecha_inicio.month], fecha_inicio.year,
+                                           fecha_fin.day, mes[fecha_fin.month], fecha_fin.year,
                                            self.horas_academicas),
                                      style=self.style4)
                 fullname = self.persona.nombre_completo
@@ -2110,13 +2106,9 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                 parrafo1 = Paragraph('''Por haber participado en calidad de Asistente en el Curso de
                  {}, llevado a cabo en forma {} del {} de {} de {}
             al {} de {} de {} con un total de {} horas académicas.'''.format(self.modulo.nombre, tipo_canal,
-                                                            fecha_inicio.day,
-                                                            mes[fecha_inicio.month],
-                                                            fecha_inicio.year,
-                                                           fecha_fin.day,
-                                                            mes[fecha_fin.month],
-                                                            fecha_fin.year,
-                                                            self.horas_academicas), style=self.style4)
+                               fecha_inicio.day, mes[fecha_inicio.month], fecha_inicio.year,
+                               fecha_fin.day, mes[fecha_fin.month], fecha_fin.year,
+                               self.horas_academicas), style=self.style4)
                 fullname = self.persona.nombre_completo
 
             # Nombre del participante
