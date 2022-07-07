@@ -785,7 +785,8 @@ input[type="checkbox"] {
 }
 
 .logo-peque{
-  width:60px;
+  padding-top: 8px;
+  width:32px;
 }
 
 .col-form-label{
