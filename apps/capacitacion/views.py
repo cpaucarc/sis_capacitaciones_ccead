@@ -1843,8 +1843,26 @@ class EnvioCertificadoMultiCorreo(View):
                     path_pdf = default_storage.path(pdf)
                     try:
                         asunto = 'UNASAM - Certificado del curso de: {}'.format(self.capacitacion.nombre)
-                        mensaje = '''<p>Estimado (a) {},</p>
-                                     <p> Se envía adjunto su Certificado.</p>'''.format(nombre_completo)
+                        mensaje = '''
+                                <!doctype html>git 
+                                <html lang="es">
+                                  <head>
+                                    <meta charset="utf-8">
+                                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+                                  </head>
+                                  <body>
+                                    <div class='container'>
+                                        <p class='display-5'>Estimado (a) <strong>{}</strong>,</p>
+                                        <div class='py-4'>
+                                            <p class='text-base'>Reciba un cordial saludo del organizador del evento <u>{}</u></p>
+                                            <p class='text-base'>Se envía adjunto su Certificado</p>
+                                        </div>
+                                        <hr class="border border-3 border-primary opacity-75">
+                                        <p class='text-secondary'>Saludos cordiales</p>
+                                    </container>
+                                  </body>
+                                </html>
+                                     '''.format(nombre_completo,self.capacitacion.nombre)
                         remitente = settings.EMAIL_HOST_USER
                         destinatarios = [correo_e]
                         email = EmailMessage(asunto, mensaje, remitente, destinatarios)
@@ -1892,8 +1910,26 @@ class EnvioCertificadoCorreo(View):
             path_pdf = default_storage.path(pdf)
             try:
                 asunto = 'UNASAM - Certificado del curso de: {}'.format(self.capacitacion.nombre)
-                mensaje = '''<p>Estimado (a) {},</p>
-                             <p> Se envía adjunto su Certificado.</p>'''.format(self.persona.nombre_completo)
+                mensaje = '''
+                        <!doctype html>
+                        <html lang="es">
+                          <head>
+                            <meta charset="utf-8">
+                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+                          </head>
+                          <body>
+                            <div class='container'>
+                                <p class='display-5'>Estimado (a) <strong>{}</strong>,</p>
+                                <div class='py-4'>
+                                    <p class='text-base'>Reciba un cordial saludo del organizador del evento <u>{}</u></p>
+                                    <p class='text-base'>Se envía adjunto su Certificado</p>
+                                </div>
+                                <hr class="border border-3 border-primary opacity-75">
+                                <p class='text-secondary'>Saludos cordiales</p>
+                            </container>
+                          </body>
+                        </html>
+                             '''.format(self.persona.nombre_completo,self.capacitacion.nombre)
                 remitente = settings.EMAIL_HOST_USER
                 destinatarios = [self.persona.email]
                 email = EmailMessage(asunto, mensaje, remitente, destinatarios)
@@ -2223,8 +2259,26 @@ class EnvioCertificadoPorModuloCorreo(View):
             path_pdf = default_storage.path(pdf)
             try:
                 asunto = 'UNASAM - Certificado del curso de: {}'.format(self.modulo.nombre)
-                mensaje = '''<p>Estimado (a) {},</p>
-                             <p> Se envía adjunto su Certificado.</p>'''.format(self.persona.nombre_completo)
+                mensaje = '''
+                        <!doctype html>
+                        <html lang="es">
+                          <head>
+                            <meta charset="utf-8">
+                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+                          </head>
+                          <body>
+                            <div class='container'>
+                                <p class='display-5'>Estimado (a) <strong>{}</strong>,</p>
+                                <div class='py-4'>
+                                    <p class='text-base'>Reciba un cordial saludo del organizador del evento <u>{}</u></p>
+                                    <p class='text-base'>Se envía adjunto su Certificado</p>
+                                </div>
+                                <hr class="border border-3 border-primary opacity-75">
+                                <p class='text-secondary'>Saludos cordiales</p>
+                            </container>
+                          </body>
+                        </html>
+                             '''.format(self.persona.nombre_completo,self.modulo.nombre)
                 remitente = settings.EMAIL_HOST_USER
                 destinatarios = [self.persona.email]
                 email = EmailMessage(asunto, mensaje, remitente, destinatarios)
@@ -2638,8 +2692,26 @@ class EnvioCertificadoMultiCorreoMod(View):
                     path_pdf = default_storage.path(pdf)
                     try:
                         asunto = 'UNASAM - Certificado del curso de: {}'.format(self.modulo.nombre)
-                        mensaje = '''<p>Estimado (a) {},</p>
-                                     <p> Se envía adjunto su Certificado.</p>'''.format(nombre_completo)
+                        mensaje = '''
+                                <!doctype html>
+                                <html lang="es">
+                                  <head>
+                                    <meta charset="utf-8">
+                                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+                                  </head>
+                                  <body>
+                                    <div class='container'>
+                                        <p class='display-5'>Estimado (a) <strong>{}</strong>,</p>
+                                        <div class='py-4'>
+                                            <p class='text-base'>Reciba un cordial saludo del organizador del evento <u>{}</u></p>
+                                            <p class='text-base'>Se envía adjunto su Certificado</p>
+                                        </div>
+                                        <hr class="border border-3 border-primary opacity-75">
+                                        <p class='text-secondary'>Saludos cordiales</p>
+                                    </container>
+                                  </body>
+                                </html>
+                                     '''.format(nombre_completo,self.modulo.nombre)
                         remitente = settings.EMAIL_HOST_USER
                         destinatarios = [correo_e]
                         email = EmailMessage(asunto, mensaje, remitente, destinatarios)
