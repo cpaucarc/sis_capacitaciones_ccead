@@ -69,8 +69,7 @@ $(document).ready(function () {
   });
 
   function revisarCapacitacion($selector, id, estado) {
-    var msj =
-      estado == "culminado" ? "ya no podrá realizar alguna modificación" : "";
+    var msj = estado === "culminado" ? "ya no podrá realizar alguna modificación" : "";
     swal({
       title: "Importante",
       html: `Está a punto cambiar el estado del proyecto de capacitación a ${estado} ${msj}, ¿Está seguro?`,
@@ -80,36 +79,52 @@ $(document).ready(function () {
       cancelButtonColor: "#d33",
       confirmButtonText: "<i class='fa fa-check'></i> SI",
       cancelButtonText: "<i class='fa fa-times'></i> NO",
-    })
-      .then(function () {
+    }).then(function () {
         $(`#lista-capacitacion-validar #msje1_${id}`).html(
           "<i class='fa fa-spinner'></i>&nbsp;"
         );
-        $.ajax({
-          method: "POST",
-          url: urlrevisarCapacitacion,
-          data: {
-            csrfmiddlewaretoken: csrf_token,
-            estado: estado,
-            id: id,
+      console.log('estado:', estado, 'id:', id)
+
+      if (estado === 'culminado'){
+        swal({
+          title: "Fecha de culminación",
+          html: `<input id="fecha_culminacion" type="date" class="form-control">`,
+          onOpen: function() {
+            var now = new Date();
+            var day = ("0" + now.getDate()).slice(-2);
+            var month = ("0" + (now.getMonth() + 1)).slice(-2);
+            var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+            $('#fecha_culminacion').val(today);
           },
-          success: function (result) {
-            table_lista_capacitacion.ajax
-              .url(urlListarCapacitacionValidar)
-              .load();
-          },
-          error: function (e) {
-            swal({
-              title: "Alerta",
-              html: e.responseJSON.error,
-              type: "warning",
-            });
-            $selector.val($(`#estado-${id}`).val());
-            $(`#lista-capacitacion-validar #msje1_${id}`).html(
-              "<i class='fa fa-warning'></i>&nbsp;"
-            );
-          },
-        });
+        }).then( value => {
+          $.ajax({
+            method: "POST",
+            url: urlrevisarCapacitacion,
+            data: {
+              csrfmiddlewaretoken: csrf_token,
+              estado: estado,
+              id: id,
+              culminacion: $('#fecha_culminacion').val()
+            },
+            success: function (result) {
+              table_lista_capacitacion.ajax
+                .url(urlListarCapacitacionValidar)
+                .load();
+            },
+            error: function (e) {
+              swal({
+                title: "Alerta",
+                html: e.responseJSON.error,
+                type: "warning",
+              });
+              $selector.val($(`#estado-${id}`).val());
+              $(`#lista-capacitacion-validar #msje1_${id}`).html(
+                "<i class='fa fa-warning'></i>&nbsp;"
+              );
+            },
+          });
+        })
+      }
       })
       .catch(() => {
         $selector.val($(`#estado-${id}`).val());

@@ -2,7 +2,6 @@ import base64
 import os
 import re
 import uuid
-
 import qrcode
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -853,7 +852,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         w, h = cabecera2.wrap(400, 0)
         cabecera2.drawOn(self.canvas, 105, 728 - h)
         logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
-        self.canvas.drawImage(ImageReader(logo_unasam), 262, 565, 85, 105)
+        self.canvas.drawImage(ImageReader(logo_unasam), 262, 570, 85, 105)
         titulo = Paragraph('CERTIFICADO', style=self.style2)
         data2[0] = [titulo]
         ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -919,7 +918,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         parrafo1.drawOn(self.canvas, 70, 445 - h)
 
         self.canvas.setFont('Times-Roman', 12)
-        self.canvas.drawString(70, 350, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day,
+        self.canvas.drawString(70, 345, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day,
                                                                          mes[self.fecha_culminado.month],
                                                                          self.fecha_culminado.year))
 
@@ -944,9 +943,9 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             tt.setStyle(table_style)
             w, h = tt.wrap(0, 0)
             if cant_firmas == 2:
-                tt.drawOn(self.canvas, 65 + cx, 250)
+                tt.drawOn(self.canvas, 65 + cx, 225)
             else:
-                tt.drawOn(self.canvas, 50 + cx, 250)
+                tt.drawOn(self.canvas, 50 + cx, 225)
             data4[0] = ['']
             data4[1] = [''] # f.firmante
             data4[2] = [''] # f.get_tipo_firma_display()
@@ -954,9 +953,9 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             tt.setStyle(table_style)
             w, h = tt.wrap(0, 0)
             if cant_firmas == 2:
-                tt.drawOn(self.canvas, 65 + cx, 215)
+                tt.drawOn(self.canvas, 65 + cx, 190)
             else:
-                tt.drawOn(self.canvas, 37 + cx, 215)
+                tt.drawOn(self.canvas, 37 + cx, 190)
             if cant_firmas == 2:
                 cx += 250
             else:
@@ -1256,6 +1255,7 @@ class RevisarCapacitacionView(LoginRequiredMixin, APIView):
             data = request.POST
             capacitacion_id = data.get('id')
             estado = data.get('estado')
+            culminacion = data.get('culminacion')
             res = True
             if capacitacion_id:
                 miembros_consejo = Persona.objects.filter(tipo_persona=TIPO_PERSONA_CONSEJO_UNASAM)
@@ -1265,8 +1265,7 @@ class RevisarCapacitacionView(LoginRequiredMixin, APIView):
                 capacitacion = get_object_or_404(Capacitacion, pk=capacitacion_id)
                 if estado == ESTADO_PROYECTO_CULMINADO:
                     if capacitacion.responsablefirma_set.all().count() < 2:
-                        errors = '''No se puede dar por culminado porque debe contar como mínimo con 2 firmantes
-                                 asignados'''
+                        errors = '''No se puede dar por culminado porque debe contar como mínimo con 2 firmantes asignados'''
                         return JsonResponse({'error': f"{errors}"}, status=HTTP_400_BAD_REQUEST)
                     modulos = [m for m in capacitacion.modulo_set.all()]
                     actas = [a for a in ActaAsistencia.objects.filter(modulo__capacitacion=capacitacion).order_by(
@@ -1279,8 +1278,15 @@ class RevisarCapacitacionView(LoginRequiredMixin, APIView):
                     capacitacion.estado = estado
                     capacitacion.observacion_revision = None
                     capacitacion.save()
-                    revision = HistorialRevision.objects.create(creado_por=self.request.user.username,
-                                                                capacitacion=capacitacion, estado=estado)
+
+                    revision = HistorialRevision.objects.create(creado_por=self.request.user.username, capacitacion=capacitacion, estado=estado)
+
+                    if culminacion is not None:
+                        culminacion = datetime.strptime(culminacion, '%Y-%m-%d')
+                        revision.fecha_creacion = culminacion
+                        revision.fecha_modificacion = culminacion
+                        revision.save()
+
                     for miembro in miembros_consejo:
                         HistorialRevisionConsejo.objects.create(ambito=AMBITO_UNASAM,
                                                                 cargo_miembro=miembro.cargo_miembro,
@@ -1601,7 +1607,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             w, h = cabecera2.wrap(400, 0)
             cabecera2.drawOn(self.canvas, 105, 728 - h)
             logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
-            self.canvas.drawImage(ImageReader(logo_unasam), 262, 565, 85, 105)
+            self.canvas.drawImage(ImageReader(logo_unasam), 262, 570, 85, 105)
             titulo = Paragraph('CERTIFICADO', style=self.style2)
             data2[0] = [titulo]
             ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -1667,7 +1673,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
             self.canvas.setFont('Times-Roman', 12)
-            self.canvas.drawString(70, 350, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day,
+            self.canvas.drawString(70, 345, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day,
                                                                              mes[self.fecha_culminado.month],
                                                                              self.fecha_culminado.year))
             responsables_firma = self.capacitacion.responsablefirma_set.all()
@@ -1691,9 +1697,9 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 tt.setStyle(table_style)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
-                    tt.drawOn(self.canvas, 65 + cx, 250)
+                    tt.drawOn(self.canvas, 65 + cx, 225)
                 else:
-                    tt.drawOn(self.canvas, 50 + cx, 250)
+                    tt.drawOn(self.canvas, 50 + cx, 225)
                 data4[0] = ['']
                 data4[1] = [''] #f.firmante
                 data4[2] = [''] #f.get_tipo_firma_display()
@@ -1701,9 +1707,9 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 tt.setStyle(table_style)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
-                    tt.drawOn(self.canvas, 65 + cx, 215)
+                    tt.drawOn(self.canvas, 65 + cx, 190)
                 else:
-                    tt.drawOn(self.canvas, 37 + cx, 215)
+                    tt.drawOn(self.canvas, 37 + cx, 190)
                 if cant_firmas == 2:
                     cx += 250
                 else:
@@ -2069,7 +2075,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             w, h = cabecera2.wrap(400, 0)
             cabecera2.drawOn(self.canvas, 105, 728 - h)
             logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
-            self.canvas.drawImage(ImageReader(logo_unasam), 262, 565, 85, 105)
+            self.canvas.drawImage(ImageReader(logo_unasam), 262, 570, 85, 105)
             titulo = Paragraph('CERTIFICADO', style=self.style2)
             data2[0] = [titulo]
             ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -2122,7 +2128,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
             self.canvas.setFont('Times-Roman', 12)
-            self.canvas.drawString(70, 350, 'Huaraz, {} de {} de {}'.format(fecha_fin.day,
+            self.canvas.drawString(70, 345, 'Huaraz, {} de {} de {}'.format(fecha_fin.day,
                                                                              mes[fecha_fin.month],
                                                                              fecha_fin.year))
             responsables_firma = self.capacitacion.responsablefirma_set.all()
@@ -2146,9 +2152,9 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                 tt.setStyle(table_style)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
-                    tt.drawOn(self.canvas, 65 + cx, 250)
+                    tt.drawOn(self.canvas, 65 + cx, 225)
                 else:
-                    tt.drawOn(self.canvas, 50 + cx, 250)
+                    tt.drawOn(self.canvas, 50 + cx, 225)
                 grado = dict(ABREVIATURA_GRADO).get(f.firmante.persona.grado_academico, '')
                 data4[0] = ['']
                 data4[1] = [''] #'{} {}'.format(grado, f.firmante).title()
@@ -2158,9 +2164,9 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                 tt.setStyle(table_style)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
-                    tt.drawOn(self.canvas, 65 + cx, 215)
+                    tt.drawOn(self.canvas, 65 + cx, 190)
                 else:
-                    tt.drawOn(self.canvas, 37 + cx, 215)
+                    tt.drawOn(self.canvas, 37 + cx, 190)
                 if cant_firmas == 2:
                     cx += 250
                 else:
@@ -2403,7 +2409,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             w, h = cabecera2.wrap(400, 0)
             cabecera2.drawOn(self.canvas, 105, 728 - h)
             logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
-            self.canvas.drawImage(ImageReader(logo_unasam), 262, 565, 85, 105)
+            self.canvas.drawImage(ImageReader(logo_unasam), 262, 570, 85, 105)
             titulo = Paragraph('CERTIFICADO', style=self.style2)
             data2[0] = [titulo]
             ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -2468,7 +2474,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
             self.canvas.setFont('Times-Roman', 12)
-            self.canvas.drawString(70, 350, 'Huaraz, {} de {} de {}'.format(self.fecha_fin.day,
+            self.canvas.drawString(70, 345, 'Huaraz, {} de {} de {}'.format(self.fecha_fin.day,
                                                                              mes[self.fecha_fin.month],
                                                                              self.fecha_fin.year))
             responsables_firma = self.capacitacion.responsablefirma_set.all()
@@ -2492,9 +2498,9 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                 tt.setStyle(table_style)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
-                    tt.drawOn(self.canvas, 65 + cx, 250)
+                    tt.drawOn(self.canvas, 65 + cx, 225)
                 else:
-                    tt.drawOn(self.canvas, 50 + cx, 250)
+                    tt.drawOn(self.canvas, 50 + cx, 225)
                 data4[0] = ['']
                 data4[1] = [''] # f.firmante
                 data4[2] = [''] # f.get_tipo_firma_display()
@@ -2502,9 +2508,9 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                 tt.setStyle(table_style)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
-                    tt.drawOn(self.canvas, 65 + cx, 215)
+                    tt.drawOn(self.canvas, 65 + cx, 190)
                 else:
-                    tt.drawOn(self.canvas, 37 + cx, 215)
+                    tt.drawOn(self.canvas, 37 + cx, 190)
                 if cant_firmas == 2:
                     cx += 250
                 else:
