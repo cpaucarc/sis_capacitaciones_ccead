@@ -5,7 +5,7 @@ CREATE SEQUENCE public.correlativo_cert_secuencia
     MINVALUE 1
     MAXVALUE 9223372036854775807
     CACHE 1;
-    
+
 
 # Ejecutar segundo
 CREATE OR REPLACE FUNCTION public.genera_correlativo_cert()
