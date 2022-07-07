@@ -494,19 +494,21 @@ class ActaAsistenciaCreateView(LoginRequiredMixin, BaseLogin, CreateView):
                 messages.warning(self.request, self.msg)
                 return render(request, self.template_name, context)
             cont = 0
+            array_dnis = []
             for d in datos:
+                array_dnis.append(str(d[1]).zfill(8))
                 cont += 1
                 tipdoc = DOCUMENT_TYPE_DNI if d[0] == 'DNI' else DOCUMENT_TYPE_CE
                 if d[0] == 'DNI':
-                    if str(d[1]).isdigit() and len(str(d[1])) == 8:
-                        self.numdoc = d[1]
+                    if str(d[1]).isdigit() and len(str(d[1]).zfill(8)) == 8:
+                        self.numdoc = str(d[1]).zfill(8)
                     else:
-                        self.msg = 'Error en el número de documento!. Verificar el Excel'.format(cont)
+                        self.msg = 'Error en el número de documento!. Verificar el Excel fila:{}'.format(cont)
                 elif d[0] == 'CE':
                     if str(d[1]).isdigit():
                         self.numdoc = d[1]
                     else:
-                        self.msg = 'Error en el número de documento!. Verificar el Excel'.format(cont)
+                        self.msg = 'Error en el número de documento!. Verificar el Excel fila:{}'.format(cont)
                 else:
                     self.msg = 'Error en el tipo de documento, solo está permitido DNI y CE'
                 if d[len(columnas) - 1] not in ('APROBADO', 'DESAPROBADO'):
@@ -519,8 +521,8 @@ class ActaAsistenciaCreateView(LoginRequiredMixin, BaseLogin, CreateView):
                     self.msg = '''Verifique que esté completo los datos de correo electrónico ya que es un dato
                                   obligatorio'''
                 elif d[6]:
-                    if not re.match('^[(a-z0-9\_\-\.)]+@[(a-z0-9\_\-\.)]+\.[(a-z)]{2,15}$', d[6].lower()):  # noqa
-                        self.msg = 'Formato de correo incorrecto, revisar el archivo Excel'
+                    if not re.match('^[(a-z0-9\_\-\.)]+@[(a-z0-9\_\-\.)]+\.[(a-z)]{2,15}$', d[6].lower().strip()):  # noqa
+                        self.msg = 'Formato de correo incorrecto, revisar el archivo Excel fila:{}'.format(cont)
                 array_a = []
                 for f in range(7, cant_fechas + 7):
                     array_a.append(str(d[f]))
@@ -552,6 +554,11 @@ class ActaAsistenciaCreateView(LoginRequiredMixin, BaseLogin, CreateView):
                         'correo': d[6].lower() if d[6] else '',
                         'resultado': d[len(columnas) - 1]
                     })
+            duplicados = set([num for num in array_dnis if array_dnis.count(num) > 1])
+            if duplicados:
+                self.msg = 'Existen número de documentos repetidos, verificar: {}'.format(duplicados)
+                messages.warning(self.request, self.msg)
+                return render(request, self.template_name, context)
             cont = 0
             # Crear Acta de asistencia
             acta = ActaAsistencia.objects.create(
