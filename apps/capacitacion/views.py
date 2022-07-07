@@ -819,8 +819,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         return path
 
     def get_certificados(self, **kwargs):
-        mes = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre",
-               "Octubre", "Noviembre", "Diciembre"]
+        mes = ["", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre","octubre", "noviembre", "diciembre"]
         table_style1 = [
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -832,7 +831,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         ]
         model_cert1 = os.path.join(F'{STATIC_ROOT}', 'img', 'mod_cert1.png')
         self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
-        table_style4 = [('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('FONTSIZE', (0, 0), (-1, -1), 20), ]
+        table_style4 = [('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('FONTSIZE', (0, 0), (-1, -1), 18), ]
         data2 = [[]] * 4
         data = [[]] * 4
         data6 = [[]] * 4
@@ -856,7 +855,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         ta.drawOn(self.canvas, 1, 475)
         otorgado = Paragraph('Otorgado a:', style=self.style3)
         w, h = otorgado.wrap(100, 0)
-        otorgado.drawOn(self.canvas, 45, 470 - h)
+        otorgado.drawOn(self.canvas, 45, 500 - h)
         # Nombre del participante
         contador += 1
         n_correlativo = ''
@@ -865,13 +864,17 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         else:
             tipo_canal = 'virtual'
         if self.miembro:
-            parrafo1 = Paragraph('''Por haber participado en calidad de <b>"{}"</b> en el Curso de
-                                 <b>"{}"</b>, llevado a cabo en forma {}, del {} al {} con una duración de <b>{} horas 
-                                 académicas</b>.'''.format(self.miembro.get_cargo_display(),
+            parrafo1 = Paragraph('''Por haber participado en calidad de {} en el Curso de
+                {}, llevado a cabo en forma {} del {} de {} de {}
+                al {} de {} de {} con un total de {} horas académicas.'''.format(self.miembro.get_cargo_display(),
                                                            self.capacitacion.nombre,
                                                            tipo_canal,
-                                                           self.capacitacion.fecha_inicio.strftime('%d/%m/%Y'),
-                                                           self.capacitacion.fecha_fin.strftime('%d/%m/%Y'),
+                                                            self.capacitacion.fecha_inicio.day,
+                                                            mes[self.capacitacion.fecha_inicio.month],
+                                                            self.capacitacion.fecha_inicio.year,
+                                                            self.capacitacion.fecha_fin.day,
+                                                            mes[self.capacitacion.fecha_fin.month],
+                                                            self.capacitacion.fecha_fin.year,
                                                            self.horas_academicas),
                                  style=self.style4)
             data[0] = ['', self.persona.nombre_completo, '']
@@ -882,13 +885,16 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             if res_correlativo:
                 n_correlativo = res_correlativo.correlativo
         else:
-            parrafo1 = Paragraph('''Por haber participado en calidad de <b>"Asistente"</b> en el Curso de
-                                     <b>"{}"</b>, llevado a cabo en forma {}, del {} al {} con una duración de <b>{}
-                                      horas académicas</b>.'''.format(self.capacitacion.nombre, tipo_canal,
-                                                                      self.capacitacion.fecha_inicio.strftime(
-                                                                          '%d/%m/%Y'),
-                                                                      self.capacitacion.fecha_fin.strftime('%d/%m/%Y'),
-                                                                      self.horas_academicas), style=self.style4)
+            parrafo1 = Paragraph('''Por haber participado en calidad de Asistente en el Curso de
+                                     {}, llevado a cabo en forma {} del {} de {} de {}
+            al {} de {} de {} con un total de {} horas académicas.'''.format(self.capacitacion.nombre, tipo_canal,
+                                                            self.capacitacion.fecha_inicio.day,
+                                                            mes[self.capacitacion.fecha_inicio.month],
+                                                            self.capacitacion.fecha_inicio.year,
+                                                            self.capacitacion.fecha_fin.day,
+                                                            mes[self.capacitacion.fecha_fin.month],
+                                                            self.capacitacion.fecha_fin.year,
+                                                            self.horas_academicas), style=self.style4)
             res_correlativo = CertEmitido.objects.filter(modulo__capacitacion=self.capacitacion,
                                                          persona=self.persona,
                                                          cargo=CARGO_CERT_EMITIDO_ASISTENTE,
@@ -902,7 +908,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         tab = Table(data=data, rowHeights=20, repeatCols=1, colWidths=[55, 500, 55])
         tab.setStyle(table_style4)
         w, h = tab.wrap(0, 0)
-        tab.drawOn(self.canvas, 1, 400)
+        tab.drawOn(self.canvas, 1, 405)
         self.canvas.setFont('Helvetica', 10)
         self.canvas.drawString(100, 365, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day,
                                                                          mes[self.fecha_culminado.month],
@@ -1550,8 +1556,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
         return path
 
     def get_certificados(self, **kwargs):
-        mes = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre",
-               "Octubre", "Noviembre", "Diciembre"]
+        mes = ["", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre","octubre", "noviembre", "diciembre"]
         table_style1 = [
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -1563,7 +1568,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
         ]
         model_cert1 = os.path.join(F'{STATIC_ROOT}', 'img', 'mod_cert1.png')
         self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
-        table_style4 = [('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('FONTSIZE', (0, 0), (-1, -1), 20), ]
+        table_style4 = [('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('FONTSIZE', (0, 0), (-1, -1), 18), ]
         data2 = [[]] * 4
         data = [[]] * 4
         data6 = [[]] * 4
@@ -1588,7 +1593,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             ta.drawOn(self.canvas, 1, 475)
             otorgado = Paragraph('Otorgado a:', style=self.style3)
             w, h = otorgado.wrap(100, 0)
-            otorgado.drawOn(self.canvas, 45, 470 - h)
+            otorgado.drawOn(self.canvas, 45, 500 - h)
             # Nombre del participante
             contador += 1
             n_correlativo = ''
@@ -1597,13 +1602,17 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             else:
                 tipo_canal = 'virtual'
             if contador > len(self.array_participantes_aprobados):
-                parrafo1 = Paragraph('''Por haber participado en calidad de <b>"{}"</b> en el Curso de
-                                 <b>"{}"</b>, llevado a cabo en forma {}, del {} al {} con una duración de <b>{} horas 
-                                 académicas</b>.'''.format(p.get_cargo_display(),
+                parrafo1 = Paragraph('''Por haber participado en calidad de {} en el Curso de
+                                 {}, llevado a cabo en forma {} del {} de {} de {}
+            al {} de {} de {} con un total de {} horas académicas.'''.format(p.get_cargo_display(),
                                                            self.capacitacion.nombre,
                                                            tipo_canal,
-                                                           self.capacitacion.fecha_inicio.strftime('%d/%m/%Y'),
-                                                           self.capacitacion.fecha_fin.strftime('%d/%m/%Y'),
+                                                            self.capacitacion.fecha_inicio.day,
+                                                            mes[self.capacitacion.fecha_inicio.month],
+                                                            self.capacitacion.fecha_inicio.year,
+                                                            self.capacitacion.fecha_fin.day,
+                                                            mes[self.capacitacion.fecha_fin.month],
+                                                            self.capacitacion.fecha_fin.year,
                                                            self.horas_academicas),
                                      style=self.style4)
                 data[0] = ['', p.persona.nombre_completo, '']
@@ -1614,13 +1623,16 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 if res_correlativo:
                     n_correlativo = res_correlativo.correlativo
             else:
-                parrafo1 = Paragraph('''Por haber participado en calidad de <b>"Asistente"</b> en el Curso de
-                                     <b>"{}"</b>, llevado a cabo en forma {}, del {} al {} con una duración de <b>{}
-                                      horas académicas</b>.'''.format(self.capacitacion.nombre, tipo_canal,
-                                                                      self.capacitacion.fecha_inicio.strftime(
-                                                                          '%d/%m/%Y'),
-                                                                      self.capacitacion.fecha_fin.strftime('%d/%m/%Y'),
-                                                                      self.horas_academicas), style=self.style4)
+                parrafo1 = Paragraph('''Por haber participado en calidad de Asistente en el Curso de
+                                     {}, llevado a cabo en forma {} del {} de {} de {}
+            al {} de {} de {} con un total de {} horas académicas.'''.format(self.capacitacion.nombre, tipo_canal,
+                                                            self.capacitacion.fecha_inicio.day,
+                                                            mes[self.capacitacion.fecha_inicio.month],
+                                                            self.capacitacion.fecha_inicio.year,
+                                                            self.capacitacion.fecha_fin.day,
+                                                            mes[self.capacitacion.fecha_fin.month],
+                                                            self.capacitacion.fecha_fin.year,
+                                                            self.horas_academicas), style=self.style4)
                 res_correlativo = CertEmitido.objects.filter(modulo__capacitacion=self.capacitacion,
                                                              persona=p,
                                                              cargo=CARGO_CERT_EMITIDO_ASISTENTE,
@@ -1634,7 +1646,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             tab = Table(data=data, rowHeights=20, repeatCols=1, colWidths=[55, 500, 55])
             tab.setStyle(table_style4)
             w, h = tab.wrap(0, 0)
-            tab.drawOn(self.canvas, 1, 400)
+            tab.drawOn(self.canvas, 1, 405)
             self.canvas.setFont('Helvetica', 10)
             self.canvas.drawString(100, 365, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day,
                                                                              mes[self.fecha_culminado.month],
@@ -1998,8 +2010,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
         return path
 
     def get_certificados(self, **kwargs):
-        mes = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre",
-               "Octubre", "Noviembre", "Diciembre"]
+        mes = ["", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre","octubre", "noviembre", "diciembre"]
         table_style1 = [
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -2009,7 +2020,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
             ('FONTSIZE', (0, 1), (0, -1), 10),
         ]
-        table_style4 = [('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('FONTSIZE', (0, 0), (-1, -1), 20)]
+        table_style4 = [('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('FONTSIZE', (0, 0), (-1, -1), 18)]
         fecha_inicio = DetalleAsistencia.objects.filter(acta_asistencia__modulo=self.modulo).first().fecha
         fecha_fin = DetalleAsistencia.objects.filter(acta_asistencia__modulo=self.modulo).last().fecha
         self.horas_academicas = self.modulo.horas_academicas
@@ -2039,7 +2050,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             ta.drawOn(self.canvas, 1, 475)
             otorgado = Paragraph('Otorgado a:', style=self.style3)
             w, h = otorgado.wrap(100, 0)
-            otorgado.drawOn(self.canvas, 45, 470 - h)
+            otorgado.drawOn(self.canvas, 45, 500 - h)
             # Nombre del participante
             contador += 1
             if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper():
@@ -2047,21 +2058,31 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             else:
                 tipo_canal = 'virtual'
             if self.miembro:
-                parrafo1 = Paragraph('''Por haber participado en calidad de <b>"{}"</b> en el Curso de
-                 <b>"{}"</b>, llevado a cabo en forma {}, del {} al {} con una duración de <b>{} horas 
-                 académicas</b>.'''.format(self.miembro.get_cargo_display(),
+                parrafo1 = Paragraph('''Por haber participado en calidad de {} en el Curso de
+                 {}, llevado a cabo en forma {} del {} de {} de {}
+            al {} de {} de {} con un total de {} horas académicas.'''.format(self.miembro.get_cargo_display(),
                                            self.modulo.nombre,
                                            tipo_canal,
-                                           fecha_inicio.strftime('%d/%m/%Y'),
-                                           fecha_fin.strftime('%d/%m/%Y'),
+                                            fecha_inicio.day,
+                                            mes[fecha_inicio.month],
+                                            fecha_inicio.year,
+                                            fecha_fin.day,
+                                            mes[fecha_fin.month],
+                                            fecha_fin.year,
                                            self.horas_academicas),
                                      style=self.style4)
                 data[0] = ['', self.persona.nombre_completo, '']
             else:
-                parrafo1 = Paragraph('''Por haber participado en calidad de <b>"Asistente"</b> en el Curso de
-                 <b>"{}"</b>, llevado a cabo en forma {}, del {} al {} con una duración de <b>{} horas 
-                 académicas</b>.'''.format(self.modulo.nombre, tipo_canal, fecha_inicio.strftime('%d/%m/%Y'),
-                                           fecha_fin.strftime('%d/%m/%Y'), self.horas_academicas), style=self.style4)
+                parrafo1 = Paragraph('''Por haber participado en calidad de Asistente en el Curso de
+                 {}, llevado a cabo en forma {} del {} de {} de {}
+            al {} de {} de {} con un total de {} horas académicas.'''.format(self.modulo.nombre, tipo_canal,
+                                                            fecha_inicio.day,
+                                                            mes[fecha_inicio.month],
+                                                            fecha_inicio.year,
+                                                           fecha_fin.day,
+                                                            mes[fecha_fin.month],
+                                                            fecha_fin.year,
+                                                            self.horas_academicas), style=self.style4)
                 data[0] = ['', self.persona.nombre_completo, '']
             data[1] = ['', '', '']
             data[2] = ['', '', '']
@@ -2069,7 +2090,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             tab = Table(data=data, rowHeights=20, repeatCols=1, colWidths=[55, 500, 55])
             tab.setStyle(table_style4)
             w, h = tab.wrap(0, 0)
-            tab.drawOn(self.canvas, 1, 400)
+            tab.drawOn(self.canvas, 1, 405)
             self.canvas.setFont('Helvetica', 10)
             self.canvas.drawString(100, 365, 'Huaraz, {} de {} de {}'.format(fecha_fin.day,
                                                                              mes[fecha_fin.month],
@@ -2316,8 +2337,8 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
         return path
 
     def get_certificados(self, **kwargs):
-        mes = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre",
-               "Octubre", "Noviembre", "Diciembre"]
+        mes = ["", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre",
+               "noviembre", "diciembre"]
         table_style1 = [
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -2329,7 +2350,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
         ]
         model_cert1 = os.path.join(F'{STATIC_ROOT}', 'img', 'mod_cert1.png')
         self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
-        table_style4 = [('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('FONTSIZE', (0, 0), (-1, -1), 20), ]
+        table_style4 = [('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('FONTSIZE', (0, 0), (-1, -1), 18), ]
         data2 = [[]] * 4
         data = [[]] * 4
         data6 = [[]] * 4
@@ -2354,7 +2375,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             ta.drawOn(self.canvas, 1, 475)
             otorgado = Paragraph('Otorgado a:', style=self.style3)
             w, h = otorgado.wrap(100, 0)
-            otorgado.drawOn(self.canvas, 45, 470 - h)
+            otorgado.drawOn(self.canvas, 45, 500 - h)
             # Nombre del participante
             contador += 1
             n_correlativo = ''
@@ -2363,15 +2384,18 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             else:
                 tipo_canal = 'virtual'
             if contador > len(self.array_participantes_aprobados):
-                parrafo1 = Paragraph('''Por haber participado en calidad de <b>"{}"</b> en el Curso de
-                                     <b>"{}"</b>, llevado a cabo en forma {}, del {} al {} con una duración de <b>{}
-                                      horas académicas</b>.'''.format(p.get_cargo_display(),
-                                                                      self.modulo.nombre,
-                                                                      tipo_canal,
-                                                                      self.fecha_inicio.strftime('%d/%m/%Y'),
-                                                                      self.fecha_fin.strftime('%d/%m/%Y'),
-                                                                      self.horas_academicas),
-                                     style=self.style4)
+                parrafo1 = Paragraph('''Por haber participado en calidad de {} en el Curso de
+                                     {}, llevado a cabo en forma {} del {} de {} de {}
+            al {} de {} de {} con un total de {} horas académicas.'''.format(p.get_cargo_display(),
+                                                              self.modulo.nombre,
+                                                              tipo_canal,
+                                                            self.fecha_inicio.day,
+                                                            mes[self.fecha_inicio.month],
+                                                            self.fecha_inicio.year,
+                                                            self.fecha_fin.day,
+                                                            mes[self.fecha_fin.month],
+                                                            self.fecha_fin.year,
+                                                              self.horas_academicas),style=self.style4)
                 data[0] = ['', p.persona.nombre_completo, '']
                 res_correlativo = CertEmitido.objects.filter(modulo=self.modulo,
                                                              persona=p.persona,
@@ -2380,11 +2404,16 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                 if res_correlativo:
                     n_correlativo = res_correlativo.correlativo
             else:
-                parrafo1 = Paragraph('''Por haber participado en calidad de <b>"Asistente"</b> en el Curso de
-                                     <b>"{}"</b>, llevado a cabo en forma {}, del {} al {} con una duración de <b>{}
-                                      horas académicas</b>.'''.format(
-                    self.modulo.nombre, tipo_canal, self.fecha_inicio.strftime('%d/%m/%Y'),
-                    self.fecha_fin.strftime('%d/%m/%Y'), self.horas_academicas), style=self.style4)
+                parrafo1 = Paragraph('''Por haber participado en calidad de Asistente en el Curso de
+                                     {}, llevado a cabo en forma {} del {} de {} de {}
+            al {} de {} de {} con un total de {} horas académicas.'''.format(
+                    self.modulo.nombre, tipo_canal,
+                    self.fecha_inicio.day,
+                    mes[self.fecha_inicio.month],
+                    self.fecha_inicio.year,
+                    self.fecha_fin.day,
+                    mes[self.fecha_fin.month],
+                    self.fecha_fin.year, self.horas_academicas), style=self.style4)
                 data[0] = ['', p.nombre_completo, '']
                 res_correlativo = CertEmitido.objects.filter(modulo=self.modulo,
                                                              persona=p,
@@ -2398,7 +2427,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             tab = Table(data=data, rowHeights=20, repeatCols=1, colWidths=[55, 500, 55])
             tab.setStyle(table_style4)
             w, h = tab.wrap(0, 0)
-            tab.drawOn(self.canvas, 1, 400)
+            tab.drawOn(self.canvas, 1, 405)
             self.canvas.setFont('Helvetica', 10)
             self.canvas.drawString(100, 365, 'Huaraz, {} de {} de {}'.format(self.fecha_fin.day,
                                                                              mes[self.fecha_fin.month],
