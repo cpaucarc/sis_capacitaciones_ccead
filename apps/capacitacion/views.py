@@ -846,8 +846,8 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         cabecera1.drawOn(self.canvas, 105, 750 - h)
         w, h = cabecera2.wrap(400, 0)
         cabecera2.drawOn(self.canvas, 105, 728 - h)
-        logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'logo-unasam.jpg')
-        self.canvas.drawImage(ImageReader(logo_unasam), 231, 565, 147, 120)
+        logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
+        self.canvas.drawImage(ImageReader(logo_unasam), 260, 565, 90, 112)
         titulo = Paragraph('CERTIFICADO', style=self.style2)
         data2[0] = [titulo]
         ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -1578,8 +1578,8 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             cabecera1.drawOn(self.canvas, 105, 750 - h)
             w, h = cabecera2.wrap(400, 0)
             cabecera2.drawOn(self.canvas, 105, 728 - h)
-            logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'logo-unasam.jpg')
-            self.canvas.drawImage(ImageReader(logo_unasam), 231, 565, 147, 120)
+            logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
+            self.canvas.drawImage(ImageReader(logo_unasam), 260, 565, 90, 112)
             titulo = Paragraph('CERTIFICADO', style=self.style2)
             data2[0] = [titulo]
             ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -2029,8 +2029,8 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             cabecera1.drawOn(self.canvas, 105, 750 - h)
             w, h = cabecera2.wrap(400, 0)
             cabecera2.drawOn(self.canvas, 105, 728 - h)
-            logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'logo-unasam.jpg')
-            self.canvas.drawImage(ImageReader(logo_unasam), 231, 565, 147, 120)
+            logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
+            self.canvas.drawImage(ImageReader(logo_unasam), 260, 565, 90, 112)
             titulo = Paragraph('CERTIFICADO', style=self.style2)
             data2[0] = [titulo]
             ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
@@ -2344,8 +2344,8 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             cabecera1.drawOn(self.canvas, 105, 750 - h)
             w, h = cabecera2.wrap(400, 0)
             cabecera2.drawOn(self.canvas, 105, 728 - h)
-            logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'logo-unasam.jpg')
-            self.canvas.drawImage(ImageReader(logo_unasam), 231, 565, 147, 120)
+            logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
+            self.canvas.drawImage(ImageReader(logo_unasam), 260, 565, 90, 112)
             titulo = Paragraph('CERTIFICADO', style=self.style2)
             data2[0] = [titulo]
             ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
