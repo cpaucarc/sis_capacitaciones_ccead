@@ -36,24 +36,28 @@
     +---------------------------------+------------------------------------------------------+
 
 ### Instalar requerimientos en virtualenv
-
+```
 - Activar el venv ubicandose dentro del proyecto: source venv/bin/activate
 - pip install -r requirements/base.txt
-
+```
 ### Indicaciones para sysadmin
 
 **EJECUTAR**
-
+```
 - python manage.py migrate
 - python manage.py collectstatic
-
+```
 **EJECUTAR LOS SEEDERS**
-
+```
 - python manage.py loaddata apps/persona/seeders/facultades.json
 - python manage.py loaddata apps/persona/seeders/docentes.json
-
+```
 **ARRANCAR LA APLICACIÓN**
-
+```
 - python manage.py runserver
+```
+### Indicaciones para Base de datos:
 
-### Indicaciones para Base de datos: [Indicaciones para BD](apps/sql/readme.md)
+Ejecutar el contenido del archivo `ejecutar.sql` en `apps/script-bd/` (en el orden indicado) en la **consola de postgres** o un **DBMS**
+
+- Nota: No se recomienda **HeidiSQL** porque arroja error al no reconocer los caracteres $$
