@@ -1844,25 +1844,20 @@ class EnvioCertificadoMultiCorreo(View):
                     try:
                         asunto = 'UNASAM - Certificado del curso de: {}'.format(self.capacitacion.nombre)
                         mensaje = '''
-                                <!doctype html>git 
-                                <html lang="es">
+                                <html>
                                   <head>
                                     <meta charset="utf-8">
-                                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
                                   </head>
-                                  <body>
-                                    <div class='container'>
-                                        <p class='display-5'>Estimado (a) <strong>{}</strong>,</p>
-                                        <div class='py-4'>
-                                            <p class='text-base'>Reciba un cordial saludo del organizador del evento <u>{}</u></p>
-                                            <p class='text-base'>Se envía adjunto su Certificado</p>
-                                        </div>
-                                        <hr class="border border-3 border-primary opacity-75">
-                                        <p class='text-secondary'>Saludos cordiales</p>
-                                    </container>
+                                  <body style="font-family: Helvetica, sans-serif, Arial; color: #212529; line-height: 1.35;">
+                                    <div style="width: 90%; margin: 0 auto; padding: 5px 0;">
+                                      <p style="font-size: calc(1.5rem); font-weight: 300; line-height: 1.2;">Estimado(a) <strong>{}</strong>,</p>
+                                      <p>Reciba un cordial saludo del organizador del evento "{}".</p>
+                                      <p>Se envía adjunto su Certificado.</p>
+                                      <hr style="border: 2px solid #4A92FE;"/>
+                                      <p style="color: #6C757D;">Saludos cordiales.</p>
+                                    </div>
                                   </body>
-                                </html>
-                                     '''.format(nombre_completo,self.capacitacion.nombre)
+                                </html>'''.format(nombre_completo, self.capacitacion.nombre)
                         remitente = settings.EMAIL_HOST_USER
                         destinatarios = [correo_e]
                         email = EmailMessage(asunto, mensaje, remitente, destinatarios)
@@ -1911,25 +1906,20 @@ class EnvioCertificadoCorreo(View):
             try:
                 asunto = 'UNASAM - Certificado del curso de: {}'.format(self.capacitacion.nombre)
                 mensaje = '''
-                        <!doctype html>
-                        <html lang="es">
-                          <head>
-                            <meta charset="utf-8">
-                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-                          </head>
-                          <body>
-                            <div class='container'>
-                                <p class='display-5'>Estimado (a) <strong>{}</strong>,</p>
-                                <div class='py-4'>
-                                    <p class='text-base'>Reciba un cordial saludo del organizador del evento <u>{}</u></p>
-                                    <p class='text-base'>Se envía adjunto su Certificado</p>
+                            <html>
+                              <head>
+                                <meta charset="utf-8">
+                              </head>
+                              <body style="font-family: Helvetica, sans-serif, Arial; color: #212529; line-height: 1.35;">
+                                <div style="width: 90%; margin: 0 auto; padding: 5px 0;">
+                                  <p style="font-size: calc(1.5rem); font-weight: 300; line-height: 1.2;">Estimado(a) <strong>{}</strong>,</p>
+                                  <p>Reciba un cordial saludo del organizador del evento "{}".</p>
+                                  <p>Se envía adjunto su Certificado.</p>
+                                  <hr style="border: 2px solid #4A92FE;"/>
+                                  <p style="color: #6C757D;">Saludos cordiales.</p>
                                 </div>
-                                <hr class="border border-3 border-primary opacity-75">
-                                <p class='text-secondary'>Saludos cordiales</p>
-                            </container>
-                          </body>
-                        </html>
-                             '''.format(self.persona.nombre_completo,self.capacitacion.nombre)
+                              </body>
+                            </html>'''.format(self.persona.nombre_completo, self.capacitacion.nombre)
                 remitente = settings.EMAIL_HOST_USER
                 destinatarios = [self.persona.email]
                 email = EmailMessage(asunto, mensaje, remitente, destinatarios)
@@ -2260,25 +2250,20 @@ class EnvioCertificadoPorModuloCorreo(View):
             try:
                 asunto = 'UNASAM - Certificado del curso de: {}'.format(self.modulo.nombre)
                 mensaje = '''
-                        <!doctype html>
-                        <html lang="es">
-                          <head>
-                            <meta charset="utf-8">
-                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-                          </head>
-                          <body>
-                            <div class='container'>
-                                <p class='display-5'>Estimado (a) <strong>{}</strong>,</p>
-                                <div class='py-4'>
-                                    <p class='text-base'>Reciba un cordial saludo del organizador del evento <u>{}</u></p>
-                                    <p class='text-base'>Se envía adjunto su Certificado</p>
+                            <html>
+                              <head>
+                                <meta charset="utf-8">
+                              </head>
+                              <body style="font-family: Helvetica, sans-serif, Arial; color: #212529; line-height: 1.35;">
+                                <div style="width: 90%; margin: 0 auto; padding: 5px 0;">
+                                  <p style="font-size: calc(1.5rem); font-weight: 300; line-height: 1.2;">Estimado(a) <strong>{}</strong>,</p>
+                                  <p>Reciba un cordial saludo del organizador del evento "{}".</p>
+                                  <p>Se envía adjunto su Certificado.</p>
+                                  <hr style="border: 2px solid #4A92FE;"/>
+                                  <p style="color: #6C757D;">Saludos cordiales.</p>
                                 </div>
-                                <hr class="border border-3 border-primary opacity-75">
-                                <p class='text-secondary'>Saludos cordiales</p>
-                            </container>
-                          </body>
-                        </html>
-                             '''.format(self.persona.nombre_completo,self.modulo.nombre)
+                              </body>
+                            </html>'''.format(self.persona.nombre_completo,self.modulo.nombre)
                 remitente = settings.EMAIL_HOST_USER
                 destinatarios = [self.persona.email]
                 email = EmailMessage(asunto, mensaje, remitente, destinatarios)
@@ -2693,25 +2678,20 @@ class EnvioCertificadoMultiCorreoMod(View):
                     try:
                         asunto = 'UNASAM - Certificado del curso de: {}'.format(self.modulo.nombre)
                         mensaje = '''
-                                <!doctype html>
-                                <html lang="es">
+                                <html>
                                   <head>
                                     <meta charset="utf-8">
-                                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
                                   </head>
-                                  <body>
-                                    <div class='container'>
-                                        <p class='display-5'>Estimado (a) <strong>{}</strong>,</p>
-                                        <div class='py-4'>
-                                            <p class='text-base'>Reciba un cordial saludo del organizador del evento <u>{}</u></p>
-                                            <p class='text-base'>Se envía adjunto su Certificado</p>
-                                        </div>
-                                        <hr class="border border-3 border-primary opacity-75">
-                                        <p class='text-secondary'>Saludos cordiales</p>
-                                    </container>
+                                  <body style="font-family: Helvetica, sans-serif, Arial; color: #212529; line-height: 1.35;">
+                                    <div style="width: 90%; margin: 0 auto; padding: 5px 0;">
+                                      <p style="font-size: calc(1.5rem); font-weight: 300; line-height: 1.2;">Estimado(a) <strong>{}</strong>,</p>
+                                      <p>Reciba un cordial saludo del organizador del evento "{}".</p>
+                                      <p>Se envía adjunto su Certificado.</p>
+                                      <hr style="border: 2px solid #4A92FE;"/>
+                                      <p style="color: #6C757D;">Saludos cordiales.</p>
+                                    </div>
                                   </body>
-                                </html>
-                                     '''.format(nombre_completo,self.modulo.nombre)
+                                </html>'''.format(nombre_completo, self.modulo.nombre)
                         remitente = settings.EMAIL_HOST_USER
                         destinatarios = [correo_e]
                         email = EmailMessage(asunto, mensaje, remitente, destinatarios)
