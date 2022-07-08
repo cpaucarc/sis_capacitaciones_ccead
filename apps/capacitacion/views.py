@@ -885,10 +885,10 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             tipo_canal = 'virtual'
         if self.miembro:
             parrafo1 = Paragraph('''Por haber participado en calidad de {} en el Curso de
-                {}, aprobado con {}, llevado a cabo en forma {} del {} de {} de {}
+                {}{}, llevado a cabo en forma {} del {} de {} de {}
                 al {} de {} de {} con un total de {} horas académicas.'''.format(self.miembro.get_cargo_display(),
                                                            self.capacitacion.nombre,
-                                                           self.capacitacion.justificacion,
+                                                           ', aprobado con ' + self.capacitacion.justificacion if len(self.capacitacion.justificacion) else '',
                                                            tipo_canal,
                                                             self.capacitacion.fecha_inicio.day,
                                                             mes[self.capacitacion.fecha_inicio.month],
@@ -907,8 +907,10 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
                 n_correlativo = res_correlativo.correlativo
         else:
             parrafo1 = Paragraph('''Por haber participado en calidad de Asistente en el Curso de
-                                     {}, aprobado con {}, llevado a cabo en forma {} del {} de {} de {}
-            al {} de {} de {} con un total de {} horas académicas.'''.format(self.capacitacion.nombre, self.capacitacion.justificacion, tipo_canal,
+                                     {}{}, llevado a cabo en forma {} del {} de {} de {}
+            al {} de {} de {} con un total de {} horas académicas.'''.format(self.capacitacion.nombre,
+                                                             ', aprobado con ' + self.capacitacion.justificacion if len(self.capacitacion.justificacion) else '',
+                                                             tipo_canal,
                                                             self.capacitacion.fecha_inicio.day,
                                                             mes[self.capacitacion.fecha_inicio.month],
                                                             self.capacitacion.fecha_inicio.year,
@@ -1666,10 +1668,10 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 tipo_canal = 'virtual'
             if contador > len(self.array_participantes_aprobados):
                 parrafo1 = Paragraph('''Por haber participado en calidad de {} en el Curso de
-                                 {}, aprobado con {}, llevado a cabo en forma {} del {} de {} de {}
+                                 {}{}, llevado a cabo en forma {} del {} de {} de {}
             al {} de {} de {} con un total de {} horas académicas.'''.format(p.get_cargo_display(),
                                                            self.capacitacion.nombre,
-                                                           self.capacitacion.justificacion,
+                                                           ', aprobado con ' + self.capacitacion.justificacion if len(self.capacitacion.justificacion) else '',
                                                            tipo_canal,
                                                             self.capacitacion.fecha_inicio.day,
                                                             mes[self.capacitacion.fecha_inicio.month],
@@ -1688,8 +1690,10 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                     n_correlativo = res_correlativo.correlativo
             else:
                 parrafo1 = Paragraph('''Por haber participado en calidad de Asistente en el Curso de
-                                     {}, aprobado con {}, llevado a cabo en forma {} del {} de {} de {}
-            al {} de {} de {} con un total de {} horas académicas.'''.format(self.capacitacion.nombre, self.capacitacion.justificacion, tipo_canal,
+                                     {}{}, llevado a cabo en forma {} del {} de {} de {}
+            al {} de {} de {} con un total de {} horas académicas.'''.format(self.capacitacion.nombre,
+                                                             ', aprobado con ' + self.capacitacion.justificacion if len(self.capacitacion.justificacion) else '',
+                                                             tipo_canal,
                                                             self.capacitacion.fecha_inicio.day,
                                                             mes[self.capacitacion.fecha_inicio.month],
                                                             self.capacitacion.fecha_inicio.year,
@@ -2183,10 +2187,11 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                 tipo_canal = 'virtual'
             if self.miembro:
                 parrafo1 = Paragraph('''Por haber participado en calidad de {} en el Curso de
-                 {}, aprobado con {}, llevado a cabo en forma {} del {} de {} de {}
+                 {}{}, llevado a cabo en forma {} del {} de {} de {}
             al {} de {} de {} con un total de {} horas académicas.'''.format(self.miembro.get_cargo_display(),
                                            self.modulo.nombre,
                                            self.capacitacion.justificacion,
+                                         ', aprobado con ' + self.capacitacion.justificacion if len(self.capacitacion.justificacion) else '',
                                            tipo_canal,
                                            fecha_inicio.day, mes[fecha_inicio.month], fecha_inicio.year,
                                            fecha_fin.day, mes[fecha_fin.month], fecha_fin.year,
@@ -2195,8 +2200,10 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                 fullname = self.persona.nombre_completo
             else:
                 parrafo1 = Paragraph('''Por haber participado en calidad de Asistente en el Curso de
-                 {}, aprobado con {}, llevado a cabo en forma {} del {} de {} de {}
-            al {} de {} de {} con un total de {} horas académicas.'''.format(self.modulo.nombre, self.capacitacion.justificacion, tipo_canal,
+                 {}{}, llevado a cabo en forma {} del {} de {} de {}
+            al {} de {} de {} con un total de {} horas académicas.'''.format(self.modulo.nombre,
+                               ', aprobado con ' + self.capacitacion.justificacion if len(self.capacitacion.justificacion) else '',
+                                tipo_canal,
                                fecha_inicio.day, mes[fecha_inicio.month], fecha_inicio.year,
                                fecha_fin.day, mes[fecha_fin.month], fecha_fin.year,
                                self.horas_academicas), style=self.style4)
@@ -2549,10 +2556,10 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                 tipo_canal = 'virtual'
             if contador > len(self.array_participantes_aprobados):
                 parrafo1 = Paragraph('''Por haber participado en calidad de {} en el Curso de
-                                     {}, aprobado con {}, llevado a cabo en forma {} del {} de {} de {}
+                                     {}{}, llevado a cabo en forma {} del {} de {} de {}
             al {} de {} de {} con un total de {} horas académicas.'''.format(p.get_cargo_display(),
                                                             self.modulo.nombre,
-                                                            self.capacitacion.justificacion,
+                                                            ', aprobado con ' + self.capacitacion.justificacion if len(self.capacitacion.justificacion) else '',
                                                             tipo_canal,
                                                             self.fecha_inicio.day,
                                                             mes[self.fecha_inicio.month],
@@ -2570,9 +2577,11 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                     n_correlativo = res_correlativo.correlativo
             else:
                 parrafo1 = Paragraph('''Por haber participado en calidad de Asistente en el Curso de
-                                     {}, aprobado con {}, llevado a cabo en forma {} del {} de {} de {}
+                                     {}{}, llevado a cabo en forma {} del {} de {} de {}
             al {} de {} de {} con un total de {} horas académicas.'''.format(
-                    self.modulo.nombre, self.capacitacion.justificacion, tipo_canal,
+                    self.modulo.nombre,
+                    ', aprobado con ' + self.capacitacion.justificacion if len(self.capacitacion.justificacion) else '',
+                    tipo_canal,
                     self.fecha_inicio.day,
                     mes[self.fecha_inicio.month],
                     self.fecha_inicio.year,
