@@ -14,26 +14,22 @@
     - python3.9 -m venv venv
 
 ### Configuracion
+Crear archivo `.env` y añadir las variables de entorno necesarias para el correcto
+funcionamiento del proyecto.
+- Reemplazar por los datos correspondientes las variables marcadas con: 🔃 
+    
+```
+DATABASE_URL='psql://user:password@host:port/database'🔃
 
-    Crear archivo .env y añadir las variables de entorno necesarias para el correcto
-    funcionamiento del proyecto.
-    Variables de entorno básicas:
+ALLOWED_HOSTS='*'
 
-    +---------------------------------+------------------------------------------------------+
-    | ``DATABASE_URL``                | Es la cadena de conexión a la base de datos para     |
-    |                                 | PostgreSQL se debe usar la siguiente sintaxys:       |
-    |                                 | ``psql://user:password@host:port/database``          |
-    +---------------------------------+------------------------------------------------------+
-    | ``ALLOWED_HOSTS``               | "*"                                                  |
-    +---------------------------------+------------------------------------------------------+
-    | ``EMAIL_HOST``                  | Host del email                                       |
-    +---------------------------------+------------------------------------------------------+
-    | ``EMAIL_PORT``                  | Puerto para el email                                 |
-    +---------------------------------+------------------------------------------------------+
-    | ``EMAIL_HOST_USER``             | Usuario para email                                   |
-    +---------------------------------+------------------------------------------------------+
-    | ``EMAIL_HOST_PASSWORD``         | Contraseña para el email                             |
-    +---------------------------------+------------------------------------------------------+
+EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS=True
+EMAIL_HOST='smtp-mail.outlook.com'
+EMAIL_HOST_USER="correo_emisor@unasam.edu.pe"🔃
+EMAIL_HOST_PASSWORD="contraseña"🔃
+EMAIL_PORT=587
+```
 
 ### Instalar requerimientos en virtualenv
 ```
