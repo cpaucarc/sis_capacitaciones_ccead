@@ -951,7 +951,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             if f.firmante.firma:
                 path_temp_firma = self.obtener_path_temporal_firma(f.id, f.firmante.firma)
             if path_temp_firma:
-                a = Image(path_temp_firma, width=110, height=80)
+                a = Image(path_temp_firma, width=140, height=90)
                 data3[0] = [a]
             tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
             tt.setStyle(table_style)
@@ -1730,7 +1730,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 if f.firmante.firma:
                     path_temp_firma = self.obtener_path_temporal_firma(f.id, f.firmante.firma)
                 if path_temp_firma:
-                    a = Image(path_temp_firma, width=110, height=80)
+                    a = Image(path_temp_firma, width=140, height=90)
                     data3[0] = [a]
                 tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
                 tt.setStyle(table_style)
@@ -1890,7 +1890,7 @@ class EnvioCertificadoMultiCorreo(View):
                     pdf = default_storage.save(self.filename, ContentFile(response.content))
                     path_pdf = default_storage.path(pdf)
                     try:
-                        asunto = 'UNASAM - Certificado del curso de: {}'.format(self.capacitacion.nombre)
+                        asunto = 'CEAD UNASAM - Certificado del curso de: {}'.format(self.capacitacion.nombre)
                         mensaje = '''
                                 <html>
                                   <head>
@@ -1952,7 +1952,7 @@ class EnvioCertificadoCorreo(View):
             pdf = default_storage.save(self.filename, ContentFile(response.content))
             path_pdf = default_storage.path(pdf)
             try:
-                asunto = 'UNASAM - Certificado del curso de: {}'.format(self.capacitacion.nombre)
+                asunto = 'CEAD UNASAM - Certificado del curso de: {}'.format(self.capacitacion.nombre)
                 mensaje = '''
                             <html>
                               <head>
@@ -2226,7 +2226,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                 if f.firmante.firma:
                     path_temp_firma = self.obtener_path_temporal_firma(f.id, f.firmante.firma)
                 if path_temp_firma:
-                    a = Image(path_temp_firma, width=110, height=80)
+                    a = Image(path_temp_firma, width=140, height=90)
                     data3[0] = [a]
                 tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
                 tt.setStyle(table_style)
@@ -2321,7 +2321,7 @@ class EnvioCertificadoPorModuloCorreo(View):
             pdf = default_storage.save(self.filename, ContentFile(response.content))
             path_pdf = default_storage.path(pdf)
             try:
-                asunto = 'UNASAM - Certificado del curso de: {}'.format(self.modulo.nombre)
+                asunto = 'CEAD UNASAM - Certificado del curso de: {}'.format(self.modulo.nombre)
                 mensaje = '''
                             <html>
                               <head>
@@ -2610,7 +2610,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                 if f.firmante.firma:
                     path_temp_firma = self.obtener_path_temporal_firma(f.id, f.firmante.firma)
                 if path_temp_firma:
-                    a = Image(path_temp_firma, width=110, height=80)
+                    a = Image(path_temp_firma, width=140, height=90)
                     data3[0] = [a]
                 tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
                 tt.setStyle(table_style)
@@ -2774,7 +2774,7 @@ class EnvioCertificadoMultiCorreoMod(View):
                     pdf = default_storage.save(self.filename, ContentFile(response.content))
                     path_pdf = default_storage.path(pdf)
                     try:
-                        asunto = 'UNASAM - Certificado del curso de: {}'.format(self.modulo.nombre)
+                        asunto = 'CEAD UNASAM - Certificado del curso de: {}'.format(self.modulo.nombre)
                         mensaje = '''
                                 <html>
                                   <head>
