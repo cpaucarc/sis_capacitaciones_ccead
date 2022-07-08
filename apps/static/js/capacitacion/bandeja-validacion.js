@@ -124,6 +124,32 @@ $(document).ready(function () {
             },
           });
         })
+      }else{
+        $.ajax({
+            method: "POST",
+            url: urlrevisarCapacitacion,
+            data: {
+              csrfmiddlewaretoken: csrf_token,
+              estado: estado,
+              id: id
+            },
+            success: function (result) {
+              table_lista_capacitacion.ajax
+                .url(urlListarCapacitacionValidar)
+                .load();
+            },
+            error: function (e) {
+              swal({
+                title: "Alerta",
+                html: e.responseJSON.error,
+                type: "warning",
+              });
+              $selector.val($(`#estado-${id}`).val());
+              $(`#lista-capacitacion-validar #msje1_${id}`).html(
+                "<i class='fa fa-warning'></i>&nbsp;"
+              );
+            },
+          });
       }
       })
       .catch(() => {
@@ -136,9 +162,7 @@ $(document).ready(function () {
     swal({
       title: "Agregar Observación al proyecto de capacitación",
       html: `<textarea id="swal-input1" name="swal-input1" rows="2" cols="100" class="form-control"></textarea>`,
-      type: "input",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
       confirmButtonText: "SI, observar proyecto",
       cancelButtonText: "NO, cancelar",
       preConfirm: function () {
@@ -151,7 +175,6 @@ $(document).ready(function () {
                 html: `Está a punto de observar el proyecto de capacitación, ¿Está seguro?`,
                 type: "question",
                 showCancelButton: true,
-                confirmButtonColor: "#d33",
                 confirmButtonText: "SI, observar proyecto",
                 cancelButtonText: "NO, cancelar",
               })
