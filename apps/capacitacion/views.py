@@ -794,6 +794,12 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         self.style_fullname = getSampleStyleSheet()['Normal']
         self.style_fullname.fontSize = 13
         self.style_fullname.alignment = TA_CENTER
+        self.style_art = getSampleStyleSheet()['Normal']
+        self.style_art.fontSize = 10
+        self.style_art.leading  = 15
+        self.style_art.fontName = 'Times-Roman'
+        self.style_art.alignment = TA_JUSTIFY
+        self.style_art.padding = '15px'
 
     def generar_code_qr(self):
         qr = qrcode.QRCode(
@@ -834,6 +840,14 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             ('FONTSIZE', (0, 0), (-1, -1), 10),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
             ('FONTSIZE', (0, 1), (0, -1), 10),
+        ]
+        table_style_art = [
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('GRID', (0, 0), (-1, -1), 0.25, colors.black, None, (2, 2, 1)),
+            ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
         ]
         model_cert1 = os.path.join(F'{STATIC_ROOT}', 'img', 'mod_cert1.png')
         self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
@@ -1023,6 +1037,17 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
                     w, h = tbl.wrap(0, 0)
                     tbl.drawOn(self.canvas, 50, (700 - h) - cxx + espace)
                     cxx += 50 + (tem * 20)
+
+        articulo = Paragraph(
+            'El presente certificado y las firmas consignadas en ella han sido emitidas a través de medios digitales, al amparo de lo dispuesto en el artículo 141-A del Código Civil:<br/>"Artículo 141-A.- En los casos en que la ley establezca que la manifestación de voluntad debe hacerse a través de alguna formalidad expresa o requerida de firma, ésta podrá ser generada o comunicada a través de medios electrónicos, ópticos o cualquier otro análogo. Tratándose de instrumentos públicos, la autoridad competente deberá dejar constancia del medio empleado y conservar una versión íntegra para su ulterior consulta."',
+            style=self.style_art)
+        data_art = [[]]
+        data_art[0] = [articulo]
+        tbl_art = Table(data=data_art, rowHeights=90, repeatCols=1, colWidths=[513])
+        tbl_art.setStyle(table_style_art)
+        w, h = tbl_art.wrap(0, 0)
+        tbl_art.drawOn(self.canvas, 50 + cxx, 70)
+
         self.canvas.showPage()
 
 
@@ -1548,6 +1573,12 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
         self.style_fullname = getSampleStyleSheet()['Normal']
         self.style_fullname.fontSize = 13
         self.style_fullname.alignment = TA_CENTER
+        self.style_art = getSampleStyleSheet()['Normal']
+        self.style_art.fontSize = 10
+        self.style_art.leading  = 15
+        self.style_art.fontName = 'Times-Roman'
+        self.style_art.alignment = TA_JUSTIFY
+        self.style_art.padding = '15px'
 
     def generar_code_qr(self):
         qr = qrcode.QRCode(
@@ -1588,6 +1619,14 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             ('FONTSIZE', (0, 0), (-1, -1), 10),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
             ('FONTSIZE', (0, 1), (0, -1), 10),
+        ]
+        table_style_art = [
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('GRID', (0, 0), (-1, -1), 0.25, colors.black, None, (2, 2, 1)),
+            ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
         ]
         model_cert1 = os.path.join(F'{STATIC_ROOT}', 'img', 'mod_cert1.png')
         self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
@@ -1779,6 +1818,15 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                         w, h = tbl.wrap(0, 0)
                         tbl.drawOn(self.canvas, 50, (700 - h) - cxx + espace)
                         cxx += 50 + (tem * 20)
+
+            articulo = Paragraph('El presente certificado y las firmas consignadas en ella han sido emitidas a través de medios digitales, al amparo de lo dispuesto en el artículo 141-A del Código Civil:<br/>"Artículo 141-A.- En los casos en que la ley establezca que la manifestación de voluntad debe hacerse a través de alguna formalidad expresa o requerida de firma, ésta podrá ser generada o comunicada a través de medios electrónicos, ópticos o cualquier otro análogo. Tratándose de instrumentos públicos, la autoridad competente deberá dejar constancia del medio empleado y conservar una versión íntegra para su ulterior consulta."', style=self.style_art)
+            data_art = [[]]
+            data_art[0] = [articulo]
+            tbl_art = Table(data=data_art, rowHeights=90, repeatCols=1, colWidths=[513])
+            tbl_art.setStyle(table_style_art)
+            w, h = tbl_art.wrap(0, 0)
+            tbl_art.drawOn(self.canvas, 50 + cxx, 70)
+
             self.canvas.showPage()
 
 
@@ -2039,6 +2087,12 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
         self.style_fullname = getSampleStyleSheet()['Normal']
         self.style_fullname.fontSize = 13
         self.style_fullname.alignment = TA_CENTER
+        self.style_art = getSampleStyleSheet()['Normal']
+        self.style_art.fontSize = 10
+        self.style_art.leading  = 15
+        self.style_art.fontName = 'Times-Roman'
+        self.style_art.alignment = TA_JUSTIFY
+        self.style_art.padding = '15px'
 
     def generar_code_qr(self):
         qr = qrcode.QRCode(
@@ -2079,6 +2133,14 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             ('FONTSIZE', (0, 0), (-1, -1), 10),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
             ('FONTSIZE', (0, 1), (0, -1), 10),
+        ]
+        table_style_art = [
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('GRID', (0, 0), (-1, -1), 0.25, colors.black, None, (2, 2, 1)),
+            ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
         ]
         table_style4 = [('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('FONTSIZE', (0, 0), (-1, -1), 18)]
         fecha_inicio = DetalleAsistencia.objects.filter(acta_asistencia__modulo=self.modulo).first().fecha
@@ -2223,6 +2285,17 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             w, h = tbl.wrap(0, 0)
             tbl.drawOn(self.canvas, 50 + cxx, 700 - h)
             cxx += 20
+
+            articulo = Paragraph(
+                'El presente certificado y las firmas consignadas en ella han sido emitidas a través de medios digitales, al amparo de lo dispuesto en el artículo 141-A del Código Civil:<br/>"Artículo 141-A.- En los casos en que la ley establezca que la manifestación de voluntad debe hacerse a través de alguna formalidad expresa o requerida de firma, ésta podrá ser generada o comunicada a través de medios electrónicos, ópticos o cualquier otro análogo. Tratándose de instrumentos públicos, la autoridad competente deberá dejar constancia del medio empleado y conservar una versión íntegra para su ulterior consulta."',
+                style=self.style_art)
+            data_art = [[]]
+            data_art[0] = [articulo]
+            tbl_art = Table(data=data_art, rowHeights=90, repeatCols=1, colWidths=[513])
+            tbl_art.setStyle(table_style_art)
+            w, h = tbl_art.wrap(0, 0)
+            tbl_art.drawOn(self.canvas, 50 + cxx, 70)
+
             self.canvas.showPage()
 
 
@@ -2380,6 +2453,12 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
         self.style_fullname = getSampleStyleSheet()['Normal']
         self.style_fullname.fontSize = 13
         self.style_fullname.alignment = TA_CENTER
+        self.style_art = getSampleStyleSheet()['Normal']
+        self.style_art.fontSize = 10
+        self.style_art.leading  = 15
+        self.style_art.fontName = 'Times-Roman'
+        self.style_art.alignment = TA_JUSTIFY
+        self.style_art.padding = '15px'
 
     def generar_code_qr(self):
         qr = qrcode.QRCode(
@@ -2421,6 +2500,14 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             ('FONTSIZE', (0, 0), (-1, -1), 10),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
             ('FONTSIZE', (0, 1), (0, -1), 10),
+        ]
+        table_style_art = [
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('GRID', (0, 0), (-1, -1), 0.25, colors.black, None, (2, 2, 1)),
+            ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
         ]
         model_cert1 = os.path.join(F'{STATIC_ROOT}', 'img', 'mod_cert1.png')
         self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
@@ -2609,6 +2696,17 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                         w, h = tbl.wrap(0, 0)
                         tbl.drawOn(self.canvas, 50, (700 - h) - cxx + espace)
                         cxx += 50 + (tem * 20)
+
+            articulo = Paragraph(
+                'El presente certificado y las firmas consignadas en ella han sido emitidas a través de medios digitales, al amparo de lo dispuesto en el artículo 141-A del Código Civil:<br/>"Artículo 141-A.- En los casos en que la ley establezca que la manifestación de voluntad debe hacerse a través de alguna formalidad expresa o requerida de firma, ésta podrá ser generada o comunicada a través de medios electrónicos, ópticos o cualquier otro análogo. Tratándose de instrumentos públicos, la autoridad competente deberá dejar constancia del medio empleado y conservar una versión íntegra para su ulterior consulta."',
+                style=self.style_art)
+            data_art = [[]]
+            data_art[0] = [articulo]
+            tbl_art = Table(data=data_art, rowHeights=90, repeatCols=1, colWidths=[513])
+            tbl_art.setStyle(table_style_art)
+            w, h = tbl_art.wrap(0, 0)
+            tbl_art.drawOn(self.canvas, 50 + cxx, 70)
+
             self.canvas.showPage()
 
 
