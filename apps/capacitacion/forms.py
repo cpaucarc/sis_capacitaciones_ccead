@@ -28,8 +28,8 @@ class CapacitacionForm(forms.ModelForm):
             attrs={'class': 'form-control input-sm', 'rows': 2, 'placeholder': '- Objetivo 1\n- Objetivo 2\n- Objetivo 3\n...'}), 
         required=False
     )
-    justificacion = forms.CharField(label='Justificación', widget=forms.TextInput(
-        attrs={'class': 'form-control input-sm'}), required=False)
+    justificacion = forms.CharField(label='Resolución y/o similar', widget=forms.TextInput(
+        attrs={'class': 'form-control input-sm', 'placeholder': 'Ejemplo. RCU N° 375-2021-UNASAM'}))
     certificacion = forms.CharField(label='Certificación', widget=forms.TextInput(
         attrs={'class': 'form-control input-sm'}))
     observacion = forms.CharField(label='Observación', widget=forms.TextInput(
