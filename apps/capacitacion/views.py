@@ -900,7 +900,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             fullname = self.persona.nombre_completo
             res_correlativo = CertEmitido.objects.filter(modulo__capacitacion=self.capacitacion,
                                                          persona=self.persona,
-                                                         cargo=self.persona.cargo,
+                                                         cargo=self.persona.cargo_miembro,
                                                          tipo=TIPO_CERT_EMITIDO_UNICO).first()
             if res_correlativo:
                 n_correlativo = res_correlativo.correlativo

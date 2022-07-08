@@ -36,10 +36,11 @@ $("#list-capacitacion").on('click', '.enviar-correo-unico-miembro', function() {
       },
       error : function(xhr,errmsg,err) {
         swal({
-          text: "Ocurrio un error intente nuevamente",
+          text: "Ocurrio un error intente nuevamente 39",
           type: "warning"
         });
         $(`#list-capacitacion .emv-${miembro_id}`).html("<i class='fa fa-envelope'>Enviar</i>");
+        console.log('Error 39', xhr,errmsg,err);
       }
     })
   }).catch(() => {
@@ -86,10 +87,11 @@ $("#list-capacitacion").on('click', '.enviar-correo-unico', function() {
       },
       error : function(xhr,errmsg,err) {
         swal({
-          text: "Ocurrio un error intente nuevamente",
+          text: "Ocurrio un error intente nuevamente 89",
           type: "warning"
         });
         $(`#list-capacitacion .elv-${acta_id}`).html("<i class='fa fa-envelope'>Enviar</i>");
+        console.log('Error 89', xhr,errmsg,err)
       }
     })
   }).catch(() => {
@@ -136,10 +138,11 @@ $("#list-capacitacion").on('click', '.enviar-correo-por-mod-miembro', function()
       },
       error : function(xhr,errmsg,err) {
         swal({
-          text: "Ocurrio un error intente nuevamente",
+          text: "Ocurrio un error intente nuevamente 140",
           type: "warning"
         });
         $(`#list-capacitacion .emv-${miembro_id}`).html("<i class='fa fa-envelope'>Enviar</i>");
+        console.log('Error 140', xhr,errmsg,err);
       }
     })
   }).catch(() => {
@@ -187,10 +190,11 @@ $("#list-capacitacion").on('click', '.enviar-correo-por-mod', function() {
       },
       error : function(xhr,errmsg,err) {
         swal({
-          text: "Ocurrio un error intente nuevamente",
+          text: "Ocurrio un error intente nuevamente 192",
           type: "warning"
         });
         $(`#list-capacitacion .elv-${acta_id}`).html("<i class='fa fa-envelope'>Enviar</i>");
+        console.log('Error 192', xhr,errmsg,err);
       }
     })
   }).catch(() => {
