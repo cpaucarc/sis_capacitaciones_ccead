@@ -1,0 +1,74 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}"/>
+    <title>CCEAD UNASAM</title>
+</head>
+<body style="background-color: #f1f5f9">
+
+<nav class="navbar navbar-dark" style="background-color: #2D529F">
+  <div class="container">
+    <a class="navbar-brand my-2 mx-3 fw-bold fs-1" href="https://www.unasam.edu.pe/">
+      <img src="{% static 'img/escudo_unasam_blanco.svg' %}" alt="Escudo Unasam" width="45">
+      UNASAM
+    </a>
+  </div>
+</nav>
+
+<main class="container p-4">
+<div class="card bg-white">
+    <div class="card-body">
+    {% if cantidad_cargos %}
+        <h5 class="card-title" style="color: #2D529F">
+            Verificación y validación de certificaciones emitidos por la CCEAD UNASAM
+        </h5>
+        <hr>
+        <section>
+            <b>Capacitación</b>
+            <p>
+                {{ capacitacion.nombre }}
+                {% if capacitacion.justificacion|length > 0 %}
+                    <br><small class="text-secondary">Aprobado con {{ capacitacion.justificacion }}</small>
+                {% endif %}
+                    <br><small class="text-secondary">Total de {{ total_horas }} horas académicas</small>
+            </p>
+        </section>
+        <br>
+        <section>
+            <b>Participante</b>
+            <p>{{ persona.apellido_paterno }} {{ persona.apellido_materno }}, {{ persona.nombres }} ({{ persona.numero_documento }})
+                <br>
+            <small class="text-secondary"><b>ROL{% if cantidad_cargos|length > 1 %}ES{% endif %}: {{ cargos }}</b></small>
+            </p>
+        </section>
+        <br>
+        <section>
+            <b>Fecha de emisión</b>
+            <p>{{ fecha_emision }}</p>
+        </section>
+    {% else %}
+        <div class="alert alert-danger" role="alert">
+          <br>
+          <p>Los datos ingresados no corresponden a alguna certificación registrada.</p>
+        </div>
+    {% endif %}
+    </div>
+</div>
+</main>
+
+<br>
+<br>
+
+
+<footer class="fixed-bottom border-top py-3" style="background-color: #f1f5f9">
+    <div class="container px-4">
+        <small>&copy; 2022 - Universidad Nacional Santiago Antúnez de Mayolo.</small>
+    </div>
+</footer>
+
+</body>
+</html>
