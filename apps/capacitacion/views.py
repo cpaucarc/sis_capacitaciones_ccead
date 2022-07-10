@@ -712,9 +712,11 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
     mostrar_pdf = False
     miembro = None
     correlativo = None
+    dominio = "qqqq"
 
     def dispatch(self, request, *args, **kwargs):
         self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y %H:%M:%S'))
+        self.dominio = request.build_absolute_uri('/')[:-1]
         if not self.kwargs.get('capacitacion', None):
             self.capacitacion = get_object_or_404(Capacitacion, pk=self.kwargs.get('id_capacitacion'))
         else:
@@ -801,14 +803,14 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         self.style_art.alignment = TA_JUSTIFY
         self.style_art.padding = '15px'
 
-    def generar_code_qr(self):
+    def generar_code_qr(self, persona_id = 0):
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
             box_size=10,
             border=4,
         )
-        qr.add_data("https://www.google.com")
+        qr.add_data(self.dominio + reverse('comprobacion:certificaciones', kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
         qr.make(fit=True)
 
         img = qr.make_image(fill_color='black', back_color='white')
@@ -935,9 +937,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         parrafo1.drawOn(self.canvas, 70, 445 - h)
 
         self.canvas.setFont('Times-Roman', 12)
-        self.canvas.drawString(70, 345, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day,
-                                                                         mes[self.fecha_culminado.month],
-                                                                         self.fecha_culminado.year))
+        self.canvas.drawString(70, 345, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day, mes[self.fecha_culminado.month], self.fecha_culminado.year))
 
         responsables_firma = self.capacitacion.responsablefirma_set.all()
         cx = 0
@@ -979,7 +979,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
                 cx += 150
             if path_temp_firma:
                 os.remove(path_temp_firma)
-        self.generar_code_qr()
+        self.generar_code_qr(self.persona.id)
         titulo1 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style_footer)
         sub_titulo1 = Paragraph('Consejo de Capacitación, Especialización y Actualización Docente',
                                 style=self.style_footer)
@@ -1500,8 +1500,10 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
     fecha_culminado = None
     correlativo = None
     array_participantes_aprobados = []
+    dominio = "ccc"
 
     def dispatch(self, request, *args, **kwargs):
+        self.dominio = request.build_absolute_uri('/')[:-1]
         self.array_participantes_aprobados = []
         self.array_equipo_proyecto = []
         self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y %H:%M:%S'))
@@ -1583,14 +1585,14 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
         self.style_art.alignment = TA_JUSTIFY
         self.style_art.padding = '15px'
 
-    def generar_code_qr(self):
+    def generar_code_qr(self, persona_id = 0):
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
             box_size=10,
             border=4,
         )
-        qr.add_data("https://www.google.com")
+        qr.add_data(self.dominio + reverse('comprobacion:certificaciones', kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
         qr.make(fit=True)
 
         img = qr.make_image(fill_color='black', back_color='white')
@@ -1762,7 +1764,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 if path_temp_firma:
                     os.remove(path_temp_firma)
             # footer
-            self.generar_code_qr()
+            self.generar_code_qr(p.id)
             titulo1 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style_footer)
             sub_titulo1 = Paragraph('Consejo de Capacitación, Especialización y Actualización Docente',
                                     style=self.style_footer)
@@ -2015,8 +2017,10 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
     miembro = None
     modulo = None
     correlativo = None
+    dominio = "dddd"
 
     def dispatch(self, request, *args, **kwargs):
+        self.dominio = request.build_absolute_uri('/')[:-1]
         self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y %H:%M:%S'))
         if not self.kwargs.get('capacitacion', None):
             self.capacitacion = get_object_or_404(Capacitacion, pk=self.kwargs.get('id_capacitacion'))
@@ -2100,14 +2104,14 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
         self.style_art.alignment = TA_JUSTIFY
         self.style_art.padding = '15px'
 
-    def generar_code_qr(self):
+    def generar_code_qr(self, persona_id = 0):
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
             box_size=10,
             border=4,
         )
-        qr.add_data("https://www.google.com")
+        qr.add_data(reverse(self.dominio + 'comprobacion:certificaciones', kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
         qr.make(fit=True)
 
         img = qr.make_image(fill_color='black', back_color='white')
@@ -2264,7 +2268,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                 if path_temp_firma:
                     os.remove(path_temp_firma)
             # footer
-            self.generar_code_qr()
+            self.generar_code_qr(self.persona.id)
             titulo1 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style_footer)
             sub_titulo = Paragraph('Consejo de Capacitación, Especialización y Actualización Docente',
                                    style=self.style_footer)
@@ -2386,8 +2390,10 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
     modulo = None
     fecha_inicio = None
     fecha_fin = None
+    dominio = "ffff"
 
     def dispatch(self, request, *args, **kwargs):
+        self.dominio = request.build_absolute_uri('/')[:-1]
         self.array_participantes_aprobados = []
         self.array_equipo_proyecto = []
         self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y %H:%M:%S'))
@@ -2470,14 +2476,14 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
         self.style_art.alignment = TA_JUSTIFY
         self.style_art.padding = '15px'
 
-    def generar_code_qr(self):
+    def generar_code_qr(self, persona_id = 0):
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
             box_size=10,
             border=4,
         )
-        qr.add_data("https://www.google.com")
+        qr.add_data(reverse(self.dominio + 'comprobacion:certificaciones', kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
         qr.make(fit=True)
 
         img = qr.make_image(fill_color='black', back_color='white')
@@ -2648,7 +2654,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                     cx += 150
                 if path_temp_firma:
                     os.remove(path_temp_firma)
-            self.generar_code_qr()
+            self.generar_code_qr(p.id)
             titulo1 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style_footer)
             sub_titulo1 = Paragraph('Consejo de Capacitación, Especialización y Actualización Docente',
                                     style=self.style_footer)

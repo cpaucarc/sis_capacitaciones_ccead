@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'apps.login',
     'apps.persona',
     'apps.capacitacion',
+    'apps.comprobacion',
 ]
 
 MIDDLEWARE = [

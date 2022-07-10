@@ -21,4 +21,5 @@ urlpatterns = [
     path('', include('apps.login.urls', namespace='login')),
     path('', include('apps.capacitacion.urls', namespace='capacitacion')),
     path('', include('apps.persona.urls', namespace='persona')),
+    path('', include('apps.comprobacion.urls', namespace='comprobacion')),
 ]
