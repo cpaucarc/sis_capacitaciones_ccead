@@ -10,15 +10,6 @@ def comprobacion_certificado_view(request, capacitacion_id, persona_id):
     persona = get_object_or_404(Persona, pk=persona_id)
     modulos = Modulo.objects.filter(capacitacion=capacitacion)
 
-    dominio = request.build_absolute_uri('/')[:-1]
-    link = reverse('comprobacion:certificaciones', kwargs={'capacitacion_id': 1, 'persona_id': 58})
-    print('\n===')
-    print(link)
-    print(dominio)
-    print(dominio + link)
-    print('===\n')
-
-
     total_horas = 0
     for modulo in modulos:
         total_horas += modulo.horas_academicas
