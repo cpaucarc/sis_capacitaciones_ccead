@@ -42,7 +42,7 @@
             <b>Participante</b>
             <p>{{ persona.apellido_paterno }} {{ persona.apellido_materno }}, {{ persona.nombres }} ({{ persona.numero_documento }})
                 <br>
-            <small class="text-secondary"><b>ROL{% if cantidad_cargos|length > 1 %}ES{% endif %}: {{ cargos }}</b></small>
+            <small class="text-secondary"><b>ROL{% if cantidad_cargos > 1 %}ES{% endif %}: {{ cargos }}</b></small>
             </p>
         </section>
         <br>
