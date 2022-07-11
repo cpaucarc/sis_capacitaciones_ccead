@@ -2,25 +2,95 @@ import io
 import os
 import uuid
 
-from PyPDF2 import PdfFileReader, PdfFileWriter
 from django.http import HttpResponse
 from django.views import View
-from reportlab.lib.pagesizes import letter
+from PyPDF2 import PdfFileReader, PdfFileWriter
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
 from reportlab.pdfgen.canvas import Canvas
 
-from config.settings import STATIC_ROOT
+# Clases auxiliares que agrupan elementos repetidos
+class EstilosPdf:
+    def __init__(self):
+        self.style = getSampleStyleSheet()['BodyText']
+        self.style.fontName = 'Helvetica-Bold'
+        self.style.alignment = TA_CENTER
+        self.style.fontSize = 11
 
+        self.style1 = getSampleStyleSheet()['Normal']
+        self.style1.fontSize = 6
 
-class PdfCertView(View):
+        self.style2 = getSampleStyleSheet()['Normal']
+        self.style2.fontSize = 30
+        self.style2.alignment = TA_CENTER
+        self.style2.fontName = 'Helvetica-Bold'
+
+        self.style3 = getSampleStyleSheet()['Normal']
+        self.style3.fontSize = 12
+
+        self.style_footer = getSampleStyleSheet()['Normal']
+        self.style_footer.alignment = TA_CENTER
+        self.style_footer.fontSize = 12
+
+        self.style4 = getSampleStyleSheet()['Normal']
+        self.style4.fontSize = 12
+        self.style4.leading = 18
+        self.style4.alignment = TA_JUSTIFY
+        self.style4.padding = '20px'
+
+        self.style5 = getSampleStyleSheet()['Normal']
+        self.style5.fontSize = 16
+        self.style5.alignment = TA_CENTER
+
+        self.style_fullname = getSampleStyleSheet()['Normal']
+        self.style_fullname.fontSize = 13
+        self.style_fullname.alignment = TA_CENTER
+
+        self.style_art = getSampleStyleSheet()['Normal']
+        self.style_art.fontSize = 9
+        self.style_art.leading = 15
+        self.style_art.alignment = TA_JUSTIFY
+        self.style_art.padding = '15px'
+
+        self.table_style1 = [
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('GRID', (0, 0), (-1, -1), 0.25, colors.black, None),
+            ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0)
+        ]
+
+class Utilidades:
+    def __init__(self):
+        self.meses = ["", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre",
+                      "octubre", "noviembre", "diciembre"]
+
+class Textos:
+    def __init__(self):
+        self.cuerpo = '''Por haber participado en calidad de {} en el Curso de {}{}, llevado a cabo
+                        en forma {} del {} de {} de {} al {} de {} de {} con un total de {} horas académicas.'''
+        self.fecha_lugar = 'Huaraz, {} de {} de {}'
+        self.articulo = 'El presente certificado y las firmas consignadas en ella han sido emitidas a través de medios digitales, al amparo de lo dispuesto en el artículo 141-A del Código Civil:<br/>"Artículo 141-A.- En los casos en que la ley establezca que la manifestación de voluntad debe hacerse a través de alguna formalidad expresa o requerida de firma, ésta podrá ser generada o comunicada a través de medios electrónicos, ópticos o cualquier otro análogo. Tratándose de instrumentos públicos, la autoridad competente deberá dejar constancia del medio empleado y conservar una versión íntegra para su ulterior consulta."'
+
+# Clase principal
+class PdfCertView(View, EstilosPdf, Utilidades, Textos):
     filename = ''
     disposition = 'inline'
+
+    def __init__(self):
+        EstilosPdf.__init__(self)
+        Utilidades.__init__(self)
+        Textos.__init__(self)
 
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = '{}; filename={}'.format(self.disposition, self.filename)
         c = Canvas(response)
-        c.setFont('Times-Roman', 6)
+        c.setFont('Helvetica', 12)
         c._doc.setTitle(self.filename)
         c = self.process_canvas(c)
         c.save()
