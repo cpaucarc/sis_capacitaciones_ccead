@@ -780,19 +780,15 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         self.style2.fontName = 'Helvetica-Bold'
         self.style3 = getSampleStyleSheet()['Normal']
         self.style3.fontSize = 12
-        self.style3.fontName = 'Helvetica'
         self.style_footer = getSampleStyleSheet()['Normal']
-        self.style_footer.fontName = 'Helvetica'
-        self.style_footer.fontSize = 12
         self.style_footer.alignment = TA_CENTER
+        self.style_footer.fontSize = 12
         self.style4 = getSampleStyleSheet()['Normal']
         self.style4.fontSize = 12
         self.style4.leading  = 18
-        self.style4.fontName = 'Helvetica'
         self.style4.alignment = TA_JUSTIFY
         self.style4.padding = '20px'
         self.style5 = getSampleStyleSheet()['Normal']
-        self.style5.fontName = 'Helvetica'
         self.style5.fontSize = 16
         self.style5.alignment = TA_CENTER
         self.style_fullname = getSampleStyleSheet()['Normal']
@@ -801,7 +797,6 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         self.style_art = getSampleStyleSheet()['Normal']
         self.style_art.fontSize = 9
         self.style_art.leading  = 15
-        self.style_art.fontName = 'Helvetica'
         self.style_art.alignment = TA_JUSTIFY
         self.style_art.padding = '15px'
 
@@ -930,7 +925,6 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         w, h = parrafo1.wrap(460, 0)
         parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-        self.canvas.setFont('Helvetica', 12)
         self.canvas.drawString(70, 345, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day, mes[self.fecha_culminado.month], self.fecha_culminado.year))
 
         responsables_firma = self.capacitacion.responsablefirma_set.all()
@@ -1556,19 +1550,15 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
         self.style2.fontName = 'Helvetica-Bold'
         self.style3 = getSampleStyleSheet()['Normal']
         self.style3.fontSize = 12
-        self.style3.fontName = 'Helvetica'
         self.style_footer = getSampleStyleSheet()['Normal']
-        self.style_footer.fontName = 'Helvetica'
-        self.style_footer.fontSize = 12
         self.style_footer.alignment = TA_CENTER
+        self.style_footer.fontSize = 12
         self.style4 = getSampleStyleSheet()['Normal']
         self.style4.fontSize = 12
         self.style4.leading  = 18
-        self.style4.fontName = 'Helvetica'
         self.style4.alignment = TA_JUSTIFY
         self.style4.padding = '20px'
         self.style5 = getSampleStyleSheet()['Normal']
-        self.style5.fontName = 'Helvetica'
         self.style5.fontSize = 16
         self.style5.alignment = TA_CENTER
         self.style_fullname = getSampleStyleSheet()['Normal']
@@ -1577,7 +1567,6 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
         self.style_art = getSampleStyleSheet()['Normal']
         self.style_art.fontSize = 9
         self.style_art.leading  = 15
-        self.style_art.fontName = 'Helvetica'
         self.style_art.alignment = TA_JUSTIFY
         self.style_art.padding = '15px'
 
@@ -1707,7 +1696,6 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             w, h = parrafo1.wrap(460, 0)
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-            self.canvas.setFont('Helvetica', 12)
             self.canvas.drawString(70, 345, 'Huaraz, {} de {} de {}'.format(self.fecha_culminado.day,
                                                                              mes[self.fecha_culminado.month],
                                                                              self.fecha_culminado.year))
@@ -2069,28 +2057,23 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
         self.style2.fontName = 'Helvetica-Bold'
         self.style3 = getSampleStyleSheet()['Normal']
         self.style3.fontSize = 12
-        self.style3.fontName = 'Helvetica'
         self.style_footer = getSampleStyleSheet()['Normal']
-        self.style_footer.fontName = 'Helvetica'
-        self.style_footer.fontSize = 12
         self.style_footer.alignment = TA_CENTER
+        self.style_footer.fontSize = 12
         self.style4 = getSampleStyleSheet()['Normal']
         self.style4.fontSize = 12
         self.style4.leading  = 18
-        self.style5 = getSampleStyleSheet()['Normal']
-        self.style5.fontName = 'Helvetica'
-        self.style5.fontSize = 16
-        self.style5.alignment = TA_CENTER
-        self.style4.fontName = 'Helvetica'
         self.style4.alignment = TA_JUSTIFY
         self.style4.padding = '20px'
+        self.style5 = getSampleStyleSheet()['Normal']
+        self.style5.fontSize = 16
+        self.style5.alignment = TA_CENTER
         self.style_fullname = getSampleStyleSheet()['Normal']
         self.style_fullname.fontSize = 13
         self.style_fullname.alignment = TA_CENTER
         self.style_art = getSampleStyleSheet()['Normal']
         self.style_art.fontSize = 9
         self.style_art.leading  = 15
-        self.style_art.fontName = 'Helvetica'
         self.style_art.alignment = TA_JUSTIFY
         self.style_art.padding = '15px'
 
@@ -2203,7 +2186,6 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             w, h = parrafo1.wrap(460, 0)
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-            self.canvas.setFont('Helvetica', 12)
             self.canvas.drawString(70, 345, 'Huaraz, {} de {} de {}'.format(fecha_fin.day,
                                                                              mes[fecha_fin.month],
                                                                              fecha_fin.year))
@@ -2435,19 +2417,15 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
         self.style2.fontName = 'Helvetica-Bold'
         self.style3 = getSampleStyleSheet()['Normal']
         self.style3.fontSize = 12
-        self.style3.fontName = 'Helvetica'
         self.style_footer = getSampleStyleSheet()['Normal']
-        self.style_footer.fontName = 'Helvetica'
-        self.style_footer.fontSize = 12
         self.style_footer.alignment = TA_CENTER
+        self.style_footer.fontSize = 12
         self.style4 = getSampleStyleSheet()['Normal']
         self.style4.fontSize = 12
         self.style4.leading  = 18
-        self.style4.fontName = 'Helvetica'
         self.style4.alignment = TA_JUSTIFY
         self.style4.padding = '20px'
         self.style5 = getSampleStyleSheet()['Normal']
-        self.style5.fontName = 'Helvetica'
         self.style5.fontSize = 16
         self.style5.alignment = TA_CENTER
         self.style_fullname = getSampleStyleSheet()['Normal']
@@ -2456,7 +2434,6 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
         self.style_art = getSampleStyleSheet()['Normal']
         self.style_art.fontSize = 9
         self.style_art.leading  = 15
-        self.style_art.fontName = 'Helvetica'
         self.style_art.alignment = TA_JUSTIFY
         self.style_art.padding = '15px'
 
@@ -2586,7 +2563,6 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             w, h = parrafo1.wrap(460, 0)
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-            self.canvas.setFont('Helvetica', 12)
             self.canvas.drawString(70, 345, 'Huaraz, {} de {} de {}'.format(self.fecha_fin.day,
                                                                              mes[self.fecha_fin.month],
                                                                              self.fecha_fin.year))
