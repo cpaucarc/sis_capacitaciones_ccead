@@ -815,8 +815,15 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
                                                      persona=self.persona,
                                                      cargo= self.persona.cargo_miembro if self.miembro else CARGO_CERT_EMITIDO_ASISTENTE,
                                                      tipo=TIPO_CERT_EMITIDO_UNICO).first()
+        current_year = datetime.now().year
         if res_correlativo:
-            n_correlativo = res_correlativo.correlativo
+            if len(res_correlativo.correlativo):
+                n_correlativo = res_correlativo.correlativo
+            else:
+                n_correlativo = '{}-{}'.format(str(res_correlativo.id).zfill(5), current_year)
+        else:
+            dni = self.persona.numero_documento
+            n_correlativo = '{}-{}'.format(str(dni[0:5]).zfill(5), current_year)
 
         parrafo1 = Paragraph(self.cuerpo.format(
                                 self.miembro.get_cargo_display() if self.miembro else 'Asistente',
@@ -1492,8 +1499,15 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                                                          persona= p.persona if contador_es_mayor else p,
                                                          cargo= p.cargo if contador_es_mayor else CARGO_CERT_EMITIDO_ASISTENTE,
                                                          tipo= TIPO_CERT_EMITIDO_UNICO).first()
+            current_year = datetime.now().year
             if res_correlativo:
-                n_correlativo = res_correlativo.correlativo
+                if len(res_correlativo.correlativo):
+                    n_correlativo = res_correlativo.correlativo
+                else:
+                    n_correlativo = '{}-{}'.format(str(res_correlativo.id).zfill(5), current_year)
+            else:
+                dni = p.persona.numero_documento if contador_es_mayor else p.numero_documento
+                n_correlativo = '{}-{}'.format(str(dni[0:5]).zfill(5), current_year)
 
             parrafo1 = Paragraph(self.cuerpo.format(
                                     p.get_cargo_display() if contador_es_mayor else 'Asistente',
@@ -2195,8 +2209,15 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                                                          cargo= p.cargo if contador_es_mayor_aprobados else CARGO_CERT_EMITIDO_ASISTENTE,
                                                          tipo=TIPO_CERT_EMITIDO_MODULO).first()
 
+            current_year = datetime.now().year
             if res_correlativo:
-                n_correlativo = res_correlativo.correlativo
+                if len(res_correlativo.correlativo):
+                    n_correlativo = res_correlativo.correlativo
+                else:
+                    n_correlativo = '{}-{}'.format(str(res_correlativo.id).zfill(5), current_year)
+            else:
+                dni = p.persona.numero_documento if contador_es_mayor_aprobados else p.numero_documento
+                n_correlativo = '{}-{}'.format(str(dni[0:5]).zfill(5), current_year)
 
             # Nombre del participante
             fullname = p.persona.nombre_completo if contador_es_mayor_aprobados else p.nombre_completo
