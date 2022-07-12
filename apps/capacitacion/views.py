@@ -2,6 +2,8 @@ import base64
 import os
 import re
 import uuid
+from _socket import herror
+
 import qrcode
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -23,6 +25,7 @@ from django.urls import reverse
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.utils import ImageReader
+from reportlab.lib.units import mm
 from reportlab.platypus import Table, Paragraph, Image
 from reportlab.graphics.barcode import code128
 from rest_framework.response import Response
@@ -714,7 +717,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
     dominio = "qqqq"
 
     def dispatch(self, request, *args, **kwargs):
-        self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y %H:%M:%S'))
+        self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y-%H:%M:%S'))
         self.dominio = request.build_absolute_uri('/')[:-1]
         if not self.kwargs.get('capacitacion', None):
             self.capacitacion = get_object_or_404(Capacitacion, pk=self.kwargs.get('id_capacitacion'))
@@ -759,14 +762,10 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
 
     def process_canvas(self, c):
         self.canvas = c
-        self.encabezado()
+        self.canvas.setPageSize((612, 792))
         if self.mostrar_pdf:
             self.get_certificados()
         return c
-
-    def encabezado(self):
-        lWidth, lHeight = 'A4'
-        self.canvas.setPageSize((lHeight, lWidth))
 
     def generar_code_qr(self, persona_id = 0):
         qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4,)
@@ -778,16 +777,6 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         imagen = os.path.join(self.path_code_qr)
         self.canvas.drawImage(ImageReader(imagen), 276, -54, width=60, preserveAspectRatio=True, mask='auto')
         os.remove(self.path_code_qr)
-
-    def obtener_path_temporal_firma(self, id, firma):
-        path = ''
-        try:
-            decode = base64.b64decode(firma)
-            filename = default_storage.save('firma_{}_temp.jpg'.format(id), ContentFile(decode))
-            path = default_storage.path(filename)
-        except:  # noqa
-            pass
-        return path
 
     def get_certificados(self, **kwargs):
         model_cert1 = os.path.join(F'{STATIC_ROOT}', 'img', 'mod_cert1.png')
@@ -808,12 +797,11 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         cabecera2.drawOn(self.canvas, 105, 728 - h)
         logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
         self.canvas.drawImage(ImageReader(logo_unasam), 263.5, 570, 85, 105)
+
         titulo = Paragraph('CERTIFICADO', style=self.style2)
-        data2[0] = [titulo]
-        ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
-        ta.setStyle(table_style4)
-        w, h = ta.wrap(0, 0)
-        ta.drawOn(self.canvas, 1, 475)
+        w, h = titulo.wrap(471, 0)
+        titulo.drawOn(self.canvas, 70, 550 - h)
+
         otorgado = Paragraph('Otorgado a:', style=self.style3)
         w, h = otorgado.wrap(200, 0)
         otorgado.drawOn(self.canvas, 70, 500 - h)
@@ -842,22 +830,17 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
 
         # Nombre del participante
         nombre_completo = Paragraph('<b>{}</b>'.format(str(self.persona.nombre_completo).upper()), style=self.style_fullname)
-        w, h = nombre_completo.wrap(460, 0)
+        w, h = nombre_completo.wrap(471, 0)
         nombre_completo.drawOn(self.canvas, 70, 475 - h)
 
         w, h = parrafo1.wrap(460, 0)
         parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-        self.canvas.drawString(70, 345, self.fecha_lugar.format(self.fecha_culminado.day, self.meses[self.fecha_culminado.month], self.fecha_culminado.year))
+        self.canvas.drawString(70, 335, self.fecha_lugar.format(self.fecha_culminado.day, self.meses[self.fecha_culminado.month], self.fecha_culminado.year))
 
         responsables_firma = self.capacitacion.responsablefirma_set.all()
         cx = 0
         cant_firmas = responsables_firma.count()
-        table_style = [
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('FONTSIZE', (0, 0), (-1, -1), 8),
-        ]
         for f in responsables_firma:
             data3 = [['']]
             data4 = [['']] * 4
@@ -868,7 +851,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
                 a = Image(path_temp_firma, width=140, height=90)
                 data3[0] = [a]
             tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
-            tt.setStyle(table_style)
+            tt.setStyle(self.table_style_firma)
             w, h = tt.wrap(0, 0)
             if cant_firmas == 2:
                 tt.drawOn(self.canvas, 65 + cx, 225)
@@ -878,7 +861,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             data4[1] = [''] # f.firmante
             data4[2] = [''] # f.get_tipo_firma_display()
             tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
-            tt.setStyle(table_style)
+            tt.setStyle(self.table_style_firma)
             w, h = tt.wrap(0, 0)
             if cant_firmas == 2:
                 tt.drawOn(self.canvas, 65 + cx, 190)
@@ -905,10 +888,12 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         self.canvas.showPage()
         cxx = 0
         conta = 0
-        codigo_barra = code128.Code128(barWidth=1.2, barHeight=25)
-        codigo_barra.value = n_correlativo
-        codigo_barra.drawOn(self.canvas, x=214, y=745)
-        self.canvas.drawString(275, 730, n_correlativo)
+
+        if len(n_correlativo):
+            codigo_barra = code128.Code128(barWidth=1.2, barHeight=25)
+            codigo_barra.value = n_correlativo
+            codigo_barra.drawOn(self.canvas, x=214, y=740)
+            self.canvas.drawString(275, 725, n_correlativo)
 
         if len(self.temarios) > 0 and len(self.temarios[0].strip()) > 0:
             if len(self.temarios) == 1:
@@ -958,7 +943,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         tbl_art = Table(data=data_art, rowHeights=100, repeatCols=1, colWidths=[513])
         tbl_art.setStyle(self.table_style1)
         w, h = tbl_art.wrap(0, 0)
-        tbl_art.drawOn(self.canvas, 49, 70)
+        tbl_art.drawOn(self.canvas, 49, 50)
 
         self.canvas.showPage()
 
@@ -1415,7 +1400,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
         self.dominio = request.build_absolute_uri('/')[:-1]
         self.array_participantes_aprobados = []
         self.array_equipo_proyecto = []
-        self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y %H:%M:%S'))
+        self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y-%H:%M:%S'))
         self.capacitacion = get_object_or_404(Capacitacion, pk=kwargs.get('id'))
         self.fecha_culminado = self.capacitacion.historialrevision_set.filter(
             estado=ESTADO_PROYECTO_CULMINADO).last().fecha_creacion
@@ -1452,13 +1437,9 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
 
     def process_canvas(self, c):
         self.canvas = c
-        self.encabezado()
+        self.canvas.setPageSize((612, 792))
         self.get_certificados()
         return c
-
-    def encabezado(self):
-        lWidth, lHeight = 'A4'
-        self.canvas.setPageSize((lHeight, lWidth))
 
     def generar_code_qr(self, persona_id = 0):
         qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4,)
@@ -1470,16 +1451,6 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
         imagen = os.path.join(self.path_code_qr)
         self.canvas.drawImage(ImageReader(imagen), 276, -54, width=60, preserveAspectRatio=True, mask='auto')
         os.remove(self.path_code_qr)
-
-    def obtener_path_temporal_firma(self, id, firma):
-        path = ''
-        try:
-            decode = base64.b64decode(firma)
-            filename = default_storage.save('firma_{}_temp.jpg'.format(id), ContentFile(decode))
-            path = default_storage.path(filename)
-        except:  # noqa
-            pass
-        return path
 
     def get_certificados(self, **kwargs):
         model_cert1 = os.path.join(F'{STATIC_ROOT}', 'img', 'mod_cert1.png')
@@ -1501,12 +1472,11 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             cabecera2.drawOn(self.canvas, 105, 728 - h)
             logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
             self.canvas.drawImage(ImageReader(logo_unasam), 263.5, 570, 85, 105)
+
             titulo = Paragraph('CERTIFICADO', style=self.style2)
-            data2[0] = [titulo]
-            ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
-            ta.setStyle(table_style4)
-            w, h = ta.wrap(0, 0)
-            ta.drawOn(self.canvas, 1, 475)
+            w, h = titulo.wrap(471, 0)
+            titulo.drawOn(self.canvas, 70, 550 - h)
+
             otorgado = Paragraph('Otorgado a:', style=self.style3)
             w, h = otorgado.wrap(200, 0)
             otorgado.drawOn(self.canvas, 70, 500 - h)
@@ -1538,23 +1508,18 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             # Nombre del participante
             fullname = p.persona.nombre_completo if contador_es_mayor else p.nombre_completo
             nombre_completo = Paragraph('<b>{}</b>'.format(str(fullname).upper()), style=self.style_fullname)
-            w, h = nombre_completo.wrap(460, 0)
+            w, h = nombre_completo.wrap(471, 0)
             nombre_completo.drawOn(self.canvas, 70, 475 - h)
 
             w, h = parrafo1.wrap(460, 0)
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-            self.canvas.drawString(70, 345, self.fecha_lugar.format(self.fecha_culminado.day,
+            self.canvas.drawString(70, 335, self.fecha_lugar.format(self.fecha_culminado.day,
                                                                              self.meses[self.fecha_culminado.month],
                                                                              self.fecha_culminado.year))
             responsables_firma = self.capacitacion.responsablefirma_set.all()
             cx = 0
             cant_firmas = responsables_firma.count()
-            table_style = [
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ('FONTSIZE', (0, 0), (-1, -1), 8),
-            ]
             for f in responsables_firma:
                 data3 = [['']]
                 data4 = [['']] * 4
@@ -1565,7 +1530,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                     a = Image(path_temp_firma, width=140, height=90)
                     data3[0] = [a]
                 tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
-                tt.setStyle(table_style)
+                tt.setStyle(self.table_style_firma)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
                     tt.drawOn(self.canvas, 65 + cx, 225)
@@ -1575,7 +1540,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 data4[1] = [''] #f.firmante
                 data4[2] = [''] #f.get_tipo_firma_display()
                 tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
-                tt.setStyle(table_style)
+                tt.setStyle(self.table_style_firma)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
                     tt.drawOn(self.canvas, 65 + cx, 190)
@@ -1603,10 +1568,12 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
 
             cxx = 0
             conta = 0
-            codigo_barra = code128.Code128(barWidth=1.2, barHeight=25)
-            codigo_barra.value = n_correlativo
-            codigo_barra.drawOn(self.canvas, x=214, y=745)
-            self.canvas.drawString(275, 730, n_correlativo)
+
+            if len(n_correlativo):
+                codigo_barra = code128.Code128(barWidth=1.2, barHeight=25)
+                codigo_barra.value = n_correlativo
+                codigo_barra.drawOn(self.canvas, x=214, y=740)
+                self.canvas.drawString(275, 725, n_correlativo)
 
             if len(self.temarios) > 0 and len(self.temarios[0].strip()) > 0:
                 if len(self.temarios) == 1:
@@ -1656,7 +1623,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             tbl_art = Table(data=data_art, rowHeights=100, repeatCols=1, colWidths=[513])
             tbl_art.setStyle(self.table_style1)
             w, h = tbl_art.wrap(0, 0)
-            tbl_art.drawOn(self.canvas, 49, 70)
+            tbl_art.drawOn(self.canvas, 49, 50)
 
             self.canvas.showPage()
 
@@ -1844,7 +1811,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
 
     def dispatch(self, request, *args, **kwargs):
         self.dominio = request.build_absolute_uri('/')[:-1]
-        self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y %H:%M:%S'))
+        self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y-%H:%M:%S'))
         if not self.kwargs.get('capacitacion', None):
             self.capacitacion = get_object_or_404(Capacitacion, pk=self.kwargs.get('id_capacitacion'))
         else:
@@ -1884,14 +1851,10 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
 
     def process_canvas(self, c):
         self.canvas = c
-        self.encabezado()
+        self.canvas.setPageSize((612, 792))
         if self.mostrar_pdf:
             self.get_certificados()
         return c
-
-    def encabezado(self):
-        lWidth, lHeight = 'A4'
-        self.canvas.setPageSize((lHeight, lWidth))
 
     def generar_code_qr(self, persona_id = 0):
         qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4,)
@@ -1903,16 +1866,6 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
         imagen = os.path.join(self.path_code_qr)
         self.canvas.drawImage(ImageReader(imagen), 276, -54, width=60, preserveAspectRatio=True, mask='auto')
         os.remove(self.path_code_qr)
-
-    def obtener_path_temporal_firma(self, id, firma):
-        path = ''
-        try:
-            decode = base64.b64decode(firma)
-            filename = default_storage.save('firma_{}_temp.jpg'.format(id), ContentFile(decode))
-            path = default_storage.path(filename)
-        except:  # noqa
-            pass
-        return path
 
     def get_certificados(self, **kwargs):
         table_style4 = [('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('FONTSIZE', (0, 0), (-1, -1), 18)]
@@ -1929,24 +1882,25 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             # Datos del certificado
             model_cert1 = os.path.join(F'{STATIC_ROOT}', 'img', 'mod_cert1.png')
             self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
+
             cabecera1 = Paragraph('UNIVERSIDAD NACIONAL', style=self.style5)
             cabecera2 = Paragraph('SANTIAGO ANTUNEZ DE MAYOLO', style=self.style5)
             w, h = cabecera1.wrap(400, 0)
             cabecera1.drawOn(self.canvas, 105, 750 - h)
             w, h = cabecera2.wrap(400, 0)
             cabecera2.drawOn(self.canvas, 105, 728 - h)
+
             logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
             self.canvas.drawImage(ImageReader(logo_unasam), 263.5, 570, 85, 105)
+
             titulo = Paragraph('CERTIFICADO', style=self.style2)
-            data2[0] = [titulo]
-            ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
-            ta.setStyle(table_style4)
-            w, h = ta.wrap(0, 0)
-            ta.drawOn(self.canvas, 1, 475)
+            w, h = titulo.wrap(471, 0)
+            titulo.drawOn(self.canvas, 70, 550 - h)
+
             otorgado = Paragraph('Otorgado a:', style=self.style3)
             w, h = otorgado.wrap(200, 0)
             otorgado.drawOn(self.canvas, 70, 500 - h)
-            # Nombre del participante
+
             contador += 1
 
             tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
@@ -1963,23 +1917,16 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
 
             # Nombre del participante
             nombre_completo = Paragraph('<b>{}</b>'.format(str(self.persona.nombre_completo).upper()), style=self.style_fullname)
-            w, h = nombre_completo.wrap(460, 0)
+            w, h = nombre_completo.wrap(471, 0)
             nombre_completo.drawOn(self.canvas, 70, 475 - h)
 
             w, h = parrafo1.wrap(460, 0)
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-            self.canvas.drawString(70, 345, self.fecha_lugar.format(fecha_fin.day,
-                                                                             self.meses[fecha_fin.month],
-                                                                             fecha_fin.year))
+            self.canvas.drawString(70, 335, self.fecha_lugar.format(fecha_fin.day, self.meses[fecha_fin.month], fecha_fin.year))
             responsables_firma = self.capacitacion.responsablefirma_set.all()
             cx = 0
             cant_firmas = responsables_firma.count()
-            table_style = [
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ('FONTSIZE', (0, 0), (-1, -1), 8),
-            ]
             for f in responsables_firma:
                 data3 = [['']]
                 data4 = [['']] * 4
@@ -1990,7 +1937,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                     a = Image(path_temp_firma, width=140, height=90)
                     data3[0] = [a]
                 tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
-                tt.setStyle(table_style)
+                tt.setStyle(self.table_style_firma)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
                     tt.drawOn(self.canvas, 65 + cx, 225)
@@ -2002,7 +1949,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                 data4[2] = [''] #f.get_tipo_firma_display()
                 data4[3] = [''] #f.firmante.ambito.upper()
                 tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
-                tt.setStyle(table_style)
+                tt.setStyle(self.table_style_firma)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
                     tt.drawOn(self.canvas, 65 + cx, 190)
@@ -2030,10 +1977,13 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             self.canvas.showPage()
             cxx = 0
             conta = 0
-            codigo_barra = code128.Code128(barWidth=1.2, barHeight=25)
-            codigo_barra.value = self.correlativo
-            codigo_barra.drawOn(self.canvas, x=214, y=745)
-            self.canvas.drawString(278, 730, self.correlativo)
+
+            if len(self.correlativo):
+                codigo_barra = code128.Code128(barWidth=1.2, barHeight=25)
+                codigo_barra.value = self.correlativo
+                codigo_barra.drawOn(self.canvas, x=214, y=740)
+                self.canvas.drawString(278, 725, self.correlativo)
+
             temas = self.modulo.temas.split('\n')
             data1 = [[]] * (len(temas) + 1)
             conta += 1
@@ -2053,7 +2003,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             tbl_art = Table(data=data_art, rowHeights=100, repeatCols=1, colWidths=[513])
             tbl_art.setStyle(self.table_style1)
             w, h = tbl_art.wrap(0, 0)
-            tbl_art.drawOn(self.canvas, 49, 70)
+            tbl_art.drawOn(self.canvas, 49, 50)
 
             self.canvas.showPage()
 
@@ -2141,7 +2091,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
         self.dominio = request.build_absolute_uri('/')[:-1]
         self.array_participantes_aprobados = []
         self.array_equipo_proyecto = []
-        self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y %H:%M:%S'))
+        self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y-%H:%M:%S'))
         self.capacitacion = get_object_or_404(Capacitacion, pk=kwargs.get('id'))
         self.modulo = get_object_or_404(Modulo, pk=kwargs.get('id_modulo'))
         self.fecha_inicio = DetalleAsistencia.objects.filter(acta_asistencia__modulo=self.modulo).first().fecha
@@ -2179,13 +2129,9 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
 
     def process_canvas(self, c):
         self.canvas = c
-        self.encabezado()
+        self.canvas.setPageSize((612, 792))
         self.get_certificados()
         return c
-
-    def encabezado(self):
-        lWidth, lHeight = 'A4'
-        self.canvas.setPageSize((lHeight, lWidth))
 
     def generar_code_qr(self, persona_id = 0):
         qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4,)
@@ -2197,16 +2143,6 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
         imagen = os.path.join(self.path_code_qr)
         self.canvas.drawImage(ImageReader(imagen), 276, -54, width=60, preserveAspectRatio=True, mask='auto')
         os.remove(self.path_code_qr)
-
-    def obtener_path_temporal_firma(self, id, firma):
-        path = ''
-        try:
-            decode = base64.b64decode(firma)
-            filename = default_storage.save('firma_{}_temp.jpg'.format(id), ContentFile(decode))
-            path = default_storage.path(filename)
-        except:  # noqa
-            pass
-        return path
 
     def get_certificados(self, **kwargs):
         model_cert1 = os.path.join(F'{STATIC_ROOT}', 'img', 'mod_cert1.png')
@@ -2228,12 +2164,11 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             cabecera2.drawOn(self.canvas, 105, 728 - h)
             logo_unasam = os.path.join(F'{STATIC_ROOT}', 'img', 'escudo_unasam.jpg')
             self.canvas.drawImage(ImageReader(logo_unasam), 263.5, 570, 85, 105)
+
             titulo = Paragraph('CERTIFICADO', style=self.style2)
-            data2[0] = [titulo]
-            ta = Table(data=data2, rowHeights=20, repeatCols=1, colWidths=610)
-            ta.setStyle(table_style4)
-            w, h = ta.wrap(0, 0)
-            ta.drawOn(self.canvas, 1, 475)
+            w, h = titulo.wrap(471, 0)
+            titulo.drawOn(self.canvas, 70, 550 - h)
+
             otorgado = Paragraph('Otorgado a:', style=self.style3)
             w, h = otorgado.wrap(200, 0)
             otorgado.drawOn(self.canvas, 70, 500 - h)
@@ -2266,22 +2201,17 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             # Nombre del participante
             fullname = p.persona.nombre_completo if contador_es_mayor_aprobados else p.nombre_completo
             nombre_completo = Paragraph('<b>{}</b>'.format(str(fullname).upper()), style=self.style_fullname)
-            w, h = nombre_completo.wrap(460, 0)
+            w, h = nombre_completo.wrap(471, 0)
             nombre_completo.drawOn(self.canvas, 70, 475 - h)
 
             w, h = parrafo1.wrap(460, 0)
             parrafo1.drawOn(self.canvas, 70, 445 - h)
 
-            self.canvas.drawString(70, 345, self.fecha_lugar.format(self.fecha_fin.day, self.meses[self.fecha_fin.month], self.fecha_fin.year))
+            self.canvas.drawString(70, 335, self.fecha_lugar.format(self.fecha_fin.day, self.meses[self.fecha_fin.month], self.fecha_fin.year))
 
             responsables_firma = self.capacitacion.responsablefirma_set.all()
             cx = 0
             cant_firmas = responsables_firma.count()
-            table_style = [
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ('FONTSIZE', (0, 0), (-1, -1), 8),
-            ]
             for f in responsables_firma:
                 data3 = [['']]
                 data4 = [['']] * 3
@@ -2292,7 +2222,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                     a = Image(path_temp_firma, width=140, height=90)
                     data3[0] = [a]
                 tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
-                tt.setStyle(table_style)
+                tt.setStyle(self.table_style_firma)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
                     tt.drawOn(self.canvas, 65 + cx, 225)
@@ -2302,7 +2232,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                 data4[1] = [''] # f.firmante
                 data4[2] = [''] # f.get_tipo_firma_display()
                 tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
-                tt.setStyle(table_style)
+                tt.setStyle(self.table_style_firma)
                 w, h = tt.wrap(0, 0)
                 if cant_firmas == 2:
                     tt.drawOn(self.canvas, 65 + cx, 190)
@@ -2329,10 +2259,12 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             self.canvas.showPage()
             cxx = 0
             conta = 0
-            codigo_barra = code128.Code128(barWidth=1.2, barHeight=25)
-            codigo_barra.value = n_correlativo
-            codigo_barra.drawOn(self.canvas, x=214, y=745)
-            self.canvas.drawString(275, 730, n_correlativo)
+
+            if len(n_correlativo):
+                codigo_barra = code128.Code128(barWidth=1.2, barHeight=25)
+                codigo_barra.value = n_correlativo
+                codigo_barra.drawOn(self.canvas, x=214, y=740)
+                self.canvas.drawString(275, 725, n_correlativo)
 
             if len(self.temarios) > 0 and len(self.temarios[0].strip()) > 0:
                 if len(self.temarios) == 1:
@@ -2382,7 +2314,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             tbl_art = Table(data=data_art, rowHeights=100, repeatCols=1, colWidths=[513])
             tbl_art.setStyle(self.table_style1)
             w, h = tbl_art.wrap(0, 0)
-            tbl_art.drawOn(self.canvas, 49, 70)
+            tbl_art.drawOn(self.canvas, 49, 50)
 
             self.canvas.showPage()
 

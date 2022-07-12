@@ -1,7 +1,10 @@
 import io
 import os
 import uuid
+import base64
 
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.views import View
 from PyPDF2 import PdfFileReader, PdfFileWriter
@@ -37,7 +40,7 @@ class EstilosPdf:
 
         self.style4 = getSampleStyleSheet()['Normal']
         self.style4.fontSize = 12
-        self.style4.leading = 18
+        self.style4.leading = 20
         self.style4.alignment = TA_JUSTIFY
         self.style4.padding = '20px'
 
@@ -64,10 +67,26 @@ class EstilosPdf:
             ('BOTTOMPADDING', (0, 0), (-1, -1), 0)
         ]
 
+        self.table_style_firma = [
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ]
+
 class Utilidades:
     def __init__(self):
         self.meses = ["", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre",
                       "octubre", "noviembre", "diciembre"]
+
+    def obtener_path_temporal_firma(self, id, firma):
+        path = ''
+        try:
+            decode = base64.b64decode(firma)
+            filename = default_storage.save('firma_{}_temp.jpg'.format(id), ContentFile(decode))
+            path = default_storage.path(filename)
+        except:  # noqa
+            pass
+        return path
 
 class Textos:
     def __init__(self):
