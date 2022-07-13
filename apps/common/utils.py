@@ -27,7 +27,7 @@ class EstilosPdf:
         self.style1.fontSize = 6
 
         self.style2 = getSampleStyleSheet()['Normal']
-        self.style2.fontSize = 30
+        self.style2.fontSize = 28
         self.style2.alignment = TA_CENTER
         self.style2.fontName = 'Helvetica-Bold'
 
@@ -38,6 +38,10 @@ class EstilosPdf:
         self.style_footer.alignment = TA_CENTER
         self.style_footer.fontSize = 12
 
+        self.style_fecha_lugar = getSampleStyleSheet()['Normal']
+        self.style_fecha_lugar.alignment = TA_CENTER
+        self.style_fecha_lugar.fontSize = 12
+
         self.style4 = getSampleStyleSheet()['Normal']
         self.style4.fontSize = 12
         self.style4.leading = 20
@@ -45,7 +49,9 @@ class EstilosPdf:
         self.style4.padding = '20px'
 
         self.style5 = getSampleStyleSheet()['Normal']
-        self.style5.fontSize = 16
+        self.style5.fontName = 'Helvetica-Bold'
+        self.style5.leading = 14
+        self.style5.fontSize = 12.5
         self.style5.alignment = TA_CENTER
 
         self.style_fullname = getSampleStyleSheet()['Normal']
@@ -53,10 +59,14 @@ class EstilosPdf:
         self.style_fullname.alignment = TA_CENTER
 
         self.style_art = getSampleStyleSheet()['Normal']
-        self.style_art.fontSize = 9
-        self.style_art.leading = 15
+        self.style_art.fontSize = 8
+        self.style_art.leading = 12
         self.style_art.alignment = TA_JUSTIFY
         self.style_art.padding = '15px'
+
+        self.style_verf = getSampleStyleSheet()['Normal']
+        self.style_verf.fontSize = 8
+        self.style_verf.alignment = TA_CENTER
 
         self.table_style1 = [
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -90,10 +100,11 @@ class Utilidades:
 
 class Textos:
     def __init__(self):
-        self.cuerpo = '''Por haber participado en calidad de {} en el Curso de {}{}, llevado a cabo
+        self.cuerpo = '''Por haber participado en calidad de {} el curso-taller de {}{}, llevado a cabo
                         en forma {} del {} de {} de {} al {} de {} de {} con un total de {} horas académicas.'''
-        self.fecha_lugar = 'Huaraz, {} de {} de {}'
-        self.articulo = 'El presente certificado y las firmas consignadas en ella han sido emitidas a través de medios digitales, al amparo de lo dispuesto en el artículo 141-A del Código Civil:<br/>"Artículo 141-A.- En los casos en que la ley establezca que la manifestación de voluntad debe hacerse a través de alguna formalidad expresa o requerida de firma, ésta podrá ser generada o comunicada a través de medios electrónicos, ópticos o cualquier otro análogo. Tratándose de instrumentos públicos, la autoridad competente deberá dejar constancia del medio empleado y conservar una versión íntegra para su ulterior consulta."'
+        self.fecha_lugar = 'Huaraz, {} de {}'
+        self.articulo = 'El presente certificado y las firmas consigno en él han sido emitido a través de medios digitales, al amparo de lo dispuesto en el artículo 141-A del Código Civil:<br/>"Artículo 141-A.- En los casos en que la ley establezca que la manifestación de voluntad debe hacerse a través de alguna formalidad expresa o requerida de firma, ésta podrá ser generada o comunicada a través de medios electrónicos, ópticos o cualquier otro análogo. Tratándose de instrumentos públicos, la autoridad competente deberá dejar constancia del medio empleado y conservar una versión íntegra para su ulterior consulta."'
+        self.autenticidad = 'Verifique la autenticidad de este documento digital a través del código QR.'
 
 # Clase principal
 class PdfCertView(View, EstilosPdf, Utilidades, Textos):
