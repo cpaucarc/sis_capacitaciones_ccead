@@ -24,6 +24,7 @@ from django.views.generic import CreateView, UpdateView, TemplateView
 from django.urls import reverse
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import utils
 from reportlab.lib.utils import ImageReader
 from reportlab.lib.units import mm
 from reportlab.platypus import Table, Paragraph, Image
@@ -791,7 +792,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
         cabecera1 = Paragraph('UNIVERSIDAD NACIONAL SANTIAGO ANTÚNEZ DE MAYOLO', style=self.style5)
         cabecera2 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style5)
-        cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
+        cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
         w, h = cabecera1.wrap(460, 0)
         cabecera1.drawOn(self.canvas, 76, 735 - h)
         w, h = cabecera2.wrap(460, 0)
@@ -863,7 +864,10 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             if f.firmante.firma:
                 path_temp_firma = self.obtener_path_temporal_firma(f.id, f.firmante.firma)
             if path_temp_firma:
-                a = Image(path_temp_firma, width=140, height=90)
+                img = ImageReader(path_temp_firma)
+                iw, ih = img.getSize()
+                aspect = iw / float(ih)
+                a = Image(path_temp_firma, width=(90 * aspect), height=90)
                 data3[0] = [a]
             tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
             tt.setStyle(self.table_style_firma)
@@ -1476,7 +1480,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
             cabecera1 = Paragraph('UNIVERSIDAD NACIONAL SANTIAGO ANTÚNEZ DE MAYOLO', style=self.style5)
             cabecera2 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style5)
-            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
+            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
             w, h = cabecera1.wrap(460, 0)
             cabecera1.drawOn(self.canvas, 76, 735 - h)
             w, h = cabecera2.wrap(460, 0)
@@ -1548,7 +1552,10 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 if f.firmante.firma:
                     path_temp_firma = self.obtener_path_temporal_firma(f.id, f.firmante.firma)
                 if path_temp_firma:
-                    a = Image(path_temp_firma, width=140, height=90)
+                    img = ImageReader(path_temp_firma)
+                    iw, ih = img.getSize()
+                    aspect = wh / float(ih)
+                    a = Image(path_temp_firma, width=(90 * aspect), height=90)
                     data3[0] = [a]
                 tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
                 tt.setStyle(self.table_style_firma)
@@ -1901,7 +1908,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
 
             cabecera1 = Paragraph('UNIVERSIDAD NACIONAL SANTIAGO ANTÚNEZ DE MAYOLO', style=self.style5)
             cabecera2 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style5)
-            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
+            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
             w, h = cabecera1.wrap(460, 0)
             cabecera1.drawOn(self.canvas, 76, 735 - h)
             w, h = cabecera2.wrap(460, 0)
@@ -1959,7 +1966,10 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                 if f.firmante.firma:
                     path_temp_firma = self.obtener_path_temporal_firma(f.id, f.firmante.firma)
                 if path_temp_firma:
-                    a = Image(path_temp_firma, width=140, height=90)
+                    img = ImageReader(path_temp_firma)
+                    iw, ih = img.getSize()
+                    aspect = iw / float(ih)
+                    a = Image(path_temp_firma, width=(90 * aspect), height=90)
                     data3[0] = [a]
                 tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
                 tt.setStyle(self.table_style_firma)
@@ -2178,7 +2188,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
             cabecera1 = Paragraph('UNIVERSIDAD NACIONAL SANTIAGO ANTÚNEZ DE MAYOLO', style=self.style5)
             cabecera2 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style5)
-            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
+            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
             w, h = cabecera1.wrap(460, 0)
             cabecera1.drawOn(self.canvas, 76, 735 - h)
             w, h = cabecera2.wrap(460, 0)
@@ -2254,7 +2264,10 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                 if f.firmante.firma:
                     path_temp_firma = self.obtener_path_temporal_firma(f.id, f.firmante.firma)
                 if path_temp_firma:
-                    a = Image(path_temp_firma, width=140, height=90)
+                    img = ImageReader(path_temp_firma)
+                    iw, ih = img.getSize()
+                    aspect = iw / float(ih)
+                    a = Image(path_temp_firma, width=(90 * aspect), height=90)
                     data3[0] = [a]
                 tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
                 tt.setStyle(self.table_style_firma)
