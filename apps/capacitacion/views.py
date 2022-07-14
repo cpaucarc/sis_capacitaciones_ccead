@@ -819,15 +819,9 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
                                                      persona=self.persona,
                                                      cargo= self.persona.cargo_miembro if self.miembro else CARGO_CERT_EMITIDO_ASISTENTE,
                                                      tipo=TIPO_CERT_EMITIDO_UNICO).first()
+
         current_year = datetime.now().year
-        if res_correlativo:
-            if len(res_correlativo.correlativo):
-                n_correlativo = res_correlativo.correlativo
-            else:
-                n_correlativo = '{}-{}'.format(str(res_correlativo.id).zfill(5), current_year)
-        else:
-            dni = self.persona.numero_documento
-            n_correlativo = '{}-{}'.format(str(dni[0:5]).zfill(5), current_year)
+        n_correlativo = self.correlativo
 
         parrafo1 = Paragraph(self.cuerpo.format(
                                 '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
