@@ -848,6 +848,7 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         parrafo1.drawOn(self.canvas, 76, 430 - h)
 
         fecha_y_lugar = Paragraph(self.fecha_lugar.format(
+            self.fecha_culminado.day,
             self.meses[self.fecha_culminado.month],
             self.fecha_culminado.year),
             style=self.style_fecha_lugar)
@@ -1538,7 +1539,8 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             w, h = parrafo1.wrap(460, 0)
             parrafo1.drawOn(self.canvas, 76, 430 - h)
 
-            fecha_y_lugar = Paragraph(self.fecha_lugar.format(self.meses[self.fecha_culminado.month], self.fecha_culminado.year), style=self.style_fecha_lugar)
+            fecha_y_lugar = Paragraph(self.fecha_lugar.format(
+            self.fecha_culminado.day, self.meses[self.fecha_culminado.month], self.fecha_culminado.year), style=self.style_fecha_lugar)
             w, h = fecha_y_lugar.wrap(460, 0)
             fecha_y_lugar.drawOn(self.canvas, 76, 330 - h)
 
@@ -1950,9 +1952,10 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             parrafo1.drawOn(self.canvas, 76, 430 - h)
 
             fecha_y_lugar = Paragraph(self.fecha_lugar.format(
-                                                self.meses[self.fecha_culminado.month],
-                                                self.fecha_culminado.year),
-                                        style=self.style_fecha_lugar)
+                            self.fecha_culminado.day,
+                            self.meses[self.fecha_culminado.month],
+                            self.fecha_culminado.year),
+                    style=self.style_fecha_lugar)
             w, h = fecha_y_lugar.wrap(460, 0)
             fecha_y_lugar.drawOn(self.canvas, 76, 330 - h)
 
@@ -2248,9 +2251,10 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             parrafo1.drawOn(self.canvas, 76, 430 - h)
 
             fecha_y_lugar = Paragraph(self.fecha_lugar.format(
-                                                self.meses[self.fecha_culminado.month],
-                                                self.fecha_culminado.year),
-                                        style=self.style_fecha_lugar)
+                        self.fecha_culminado.day,
+                        self.meses[self.fecha_culminado.month],
+                        self.fecha_culminado.year),
+                style=self.style_fecha_lugar)
             w, h = fecha_y_lugar.wrap(460, 0)
             fecha_y_lugar.drawOn(self.canvas, 76, 330 - h)
 
