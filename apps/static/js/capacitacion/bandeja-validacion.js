@@ -74,7 +74,7 @@ $("#lista-capacitacion-validar").on("keyup", "#fecha_culminado", function (event
         if (event.key === "Enter") {
             var id = $(this).attr("data-id");
             var estado = 'culminado';
-            var fecha = $('#fecha_culminado').val()
+            var fecha = $(this).val()
             console.log('estado:', estado, 'id:', id, 'fecha:', fecha)
             $.ajax({
                 method: "POST",
