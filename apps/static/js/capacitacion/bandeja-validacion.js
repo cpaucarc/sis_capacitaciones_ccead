@@ -68,6 +68,44 @@ $(document).ready(function () {
     }
   });
 
+
+$("#lista-capacitacion-validar").on("keyup", "#fecha_culminado", function (event) {
+
+        if (event.key === "Enter") {
+            var id = $(this).attr("data-id");
+            var estado = 'culminado';
+            var fecha = $('#fecha_culminado').val()
+            console.log('estado:', estado, 'id:', id, 'fecha:', fecha)
+            $.ajax({
+                method: "POST",
+                url: urlrevisarCapacitacion,
+                data: {
+                    csrfmiddlewaretoken: csrf_token,
+                    estado: estado,
+                    id: id,
+                    culminacion: fecha
+                },
+                success: function (result) {
+                    table_lista_capacitacion.ajax
+                        .url(urlListarCapacitacionValidar)
+                        .load();
+                },
+                error: function (e) {
+                    swal({
+                        title: "Alerta",
+                        html: e.responseJSON.error,
+                        type: "warning",
+                    });
+                    $selector.val($(`#estado-${id}`).val());
+                    $(`#lista-capacitacion-validar #msje1_${id}`).html(
+                        "<i class='fa fa-warning'></i>&nbsp;"
+                    );
+                },
+            });
+        }
+
+    });
+
   function revisarCapacitacion($selector, id, estado) {
     var msj = estado === "culminado" ? "ya no podrá realizar alguna modificación" : "";
     swal({

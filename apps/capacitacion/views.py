@@ -1020,6 +1020,7 @@ class ListaCapacitacionValidarView(LoginRequiredMixin, BaseLogin, View):
                 self.array_modulos.append(m)
                 mod_cont += 1
                 acta = ActaAsistencia.objects.filter(modulo=m).order_by('fecha_creacion').first()
+                his_rev = HistorialRevision.objects.filter(capacitacion=a.id).order_by('-id').first()
                 if acta:
                     mm += 1
                     asistencia = asistencia + '''<button class="btn btn-success btn-xs v-acta" data-id="{}" 
@@ -1044,8 +1045,10 @@ class ListaCapacitacionValidarView(LoginRequiredMixin, BaseLogin, View):
                  ),
                 asistencia,
                 a.observacion_revision or '-',
-                combo if a.estado != ESTADO_PROYECTO_CULMINADO else '<label class="text-info"> {}</label>'.format(
-                    a.get_estado_display()),
+                combo if a.estado != ESTADO_PROYECTO_CULMINADO else '''
+                <label class="text-info"> {}</label>
+                <input id="fecha_culminado" name="fecha_culminado" type="date" value="{}" data-id="{}"  class="form-control">
+                '''.format(a.get_estado_display(),his_rev.fecha_creacion.strftime("%Y-%m-%d"), a.id),
                 self.get_boton_bandeja_asignar_firmante(a) if a.estado == ESTADO_PROYECTO_VALIDADO else '',
                 self.get_boton_genera_certificados(a) if a.estado == ESTADO_PROYECTO_CULMINADO else '',
                 (self.get_boton_envia_correo(a) if a.estado == ESTADO_PROYECTO_CULMINADO else '')
