@@ -1567,7 +1567,7 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 if path_temp_firma:
                     img = ImageReader(path_temp_firma)
                     iw, ih = img.getSize()
-                    aspect = wh / float(ih)
+                    aspect = iw / float(ih)
                     a = Image(path_temp_firma, width=(90 * aspect), height=90)
                     data3[0] = [a]
                 tt = Table(data=data3, rowHeights=70, repeatCols=1, colWidths=230)
