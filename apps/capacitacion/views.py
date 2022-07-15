@@ -523,7 +523,8 @@ class ActaAsistenciaCreateView(LoginRequiredMixin, BaseLogin, CreateView):
                     self.msg = '''Verifique que esté completo los datos de correo electrónico ya que es un dato
                                   obligatorio'''
                 elif d[6]:
-                    if not re.match('^[(a-z0-9\_\-\.)]+@[(a-z0-9\_\-\.)]+\.[(a-z)]{2,15}$', d[6].lower().strip()):  # noqa
+                    if not re.match('^[(a-z0-9\_\-\.)]+@[(a-z0-9\_\-\.)]+\.[(a-z)]{2,15}$',
+                                    d[6].lower().strip()):  # noqa
                         self.msg = 'Formato de correo incorrecto, revisar el archivo Excel fila:{}'.format(cont)
                 array_a = []
                 for f in range(7, cant_fechas + 7):
@@ -768,9 +769,10 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             self.get_certificados()
         return c
 
-    def generar_code_qr(self, persona_id = 0):
-        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4,)
-        qr.add_data(self.dominio + reverse('comprobacion:certificaciones', kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
+    def generar_code_qr(self, persona_id=0):
+        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4, )
+        qr.add_data(self.dominio + reverse('comprobacion:certificaciones',
+                                           kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
         qr.make(fit=True)
 
         img = qr.make_image(fill_color='black', back_color='white')
@@ -792,7 +794,8 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
         cabecera1 = Paragraph('UNIVERSIDAD NACIONAL SANTIAGO ANTÚNEZ DE MAYOLO', style=self.style5)
         cabecera2 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style5)
-        cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
+        cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)',
+                              style=self.style5)
         w, h = cabecera1.wrap(460, 0)
         cabecera1.drawOn(self.canvas, 76, 735 - h)
         w, h = cabecera2.wrap(460, 0)
@@ -817,24 +820,27 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
 
         res_correlativo = CertEmitido.objects.filter(modulo__capacitacion=self.capacitacion,
                                                      persona=self.persona,
-                                                     cargo= self.persona.cargo_miembro if self.miembro else CARGO_CERT_EMITIDO_ASISTENTE,
+                                                     cargo=self.persona.cargo_miembro if self.miembro else CARGO_CERT_EMITIDO_ASISTENTE,
                                                      tipo=TIPO_CERT_EMITIDO_UNICO).first()
 
         current_year = datetime.now().year
         n_correlativo = self.correlativo
 
         parrafo1 = Paragraph(self.cuerpo.format(
-                                '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
-                                self.capacitacion.nombre.upper(),
-                                ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
-                                tipo_canal,
-                                self.capacitacion.fecha_inicio.day, self.meses[self.capacitacion.fecha_inicio.month], self.capacitacion.fecha_inicio.year,
-                                self.capacitacion.fecha_fin.day, self.meses[self.capacitacion.fecha_fin.month], self.capacitacion.fecha_fin.year,
-                                self.horas_academicas
-                            ), style=self.style4)
+            '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
+            self.capacitacion.nombre.upper(),
+            ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
+            tipo_canal,
+            self.capacitacion.fecha_inicio.day, self.meses[self.capacitacion.fecha_inicio.month],
+            self.capacitacion.fecha_inicio.year,
+            self.capacitacion.fecha_fin.day, self.meses[self.capacitacion.fecha_fin.month],
+            self.capacitacion.fecha_fin.year,
+            self.horas_academicas
+        ), style=self.style4)
 
         # Nombre del participante
-        nombre_completo = Paragraph('<b>{}</b>'.format(str(self.persona.nombre_completo).upper()), style=self.style_fullname)
+        nombre_completo = Paragraph('<b>{}</b>'.format(str(self.persona.nombre_completo).upper()),
+                                    style=self.style_fullname)
         w, h = nombre_completo.wrap(471, 0)
         nombre_completo.drawOn(self.canvas, 76, 460 - h)
 
@@ -872,8 +878,8 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
             else:
                 tt.drawOn(self.canvas, 50 + cx, 225)
             data4[0] = ['']
-            data4[1] = [''] # f.firmante
-            data4[2] = [''] # f.get_tipo_firma_display()
+            data4[1] = ['']  # f.firmante
+            data4[2] = ['']  # f.get_tipo_firma_display()
             tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
             tt.setStyle(self.table_style_firma)
             w, h = tt.wrap(0, 0)
@@ -1014,6 +1020,7 @@ class ListaCapacitacionValidarView(LoginRequiredMixin, BaseLogin, View):
             for m in a.modulo_set.all():
                 self.array_modulos.append(m)
                 mod_cont += 1
+                link = reverse('capacitacion:editar', kwargs={'pk': a.id})
                 acta = ActaAsistencia.objects.filter(modulo=m).order_by('fecha_creacion').first()
                 his_rev = HistorialRevision.objects.filter(capacitacion=a.id).order_by('-id').first()
                 if acta:
@@ -1033,7 +1040,7 @@ class ListaCapacitacionValidarView(LoginRequiredMixin, BaseLogin, View):
             lista_equipos_data.append([
                 cont,
                 '<p style="font-size:14px;">{}</p>'.format(a.facultad or '-'),
-                '<p style="font-size:14px;">{}</p>'.format(a.nombre),
+                '<a style="font-size:14px;text-decoration: none;" href="{}">{}</a>'.format(link, a.nombre),
                 '<label style="font-size:12px;">{} al {}</label>'.format(a.fecha_inicio, a.fecha_fin),
                 ('''<button class="btn btn-info btn-xs" id="ver_archivo_pdf" data-archivo={}>
                   Ver</button>'''.format(a.ruta_proyecto_pdf) if a.ruta_proyecto_pdf else ''
@@ -1043,7 +1050,7 @@ class ListaCapacitacionValidarView(LoginRequiredMixin, BaseLogin, View):
                 combo if a.estado != ESTADO_PROYECTO_CULMINADO else '''
                 <label class="text-info"> {}</label>
                 <input id="fecha_culminado" name="fecha_culminado" type="date" value="{}" data-id="{}"  class="form-control">
-                '''.format(a.get_estado_display(),his_rev.fecha_creacion.strftime("%Y-%m-%d"), a.id),
+                '''.format(a.get_estado_display(), his_rev.fecha_creacion.strftime("%Y-%m-%d"), a.id),
                 self.get_boton_bandeja_asignar_firmante(a) if a.estado == ESTADO_PROYECTO_VALIDADO else '',
                 self.get_boton_genera_certificados(a) if a.estado == ESTADO_PROYECTO_CULMINADO else '',
                 (self.get_boton_envia_correo(a) if a.estado == ESTADO_PROYECTO_CULMINADO else '')
@@ -1213,7 +1220,8 @@ class RevisarCapacitacionView(LoginRequiredMixin, APIView):
                     capacitacion.observacion_revision = None
                     capacitacion.save()
 
-                    revision = HistorialRevision.objects.create(creado_por=self.request.user.username, capacitacion=capacitacion, estado=estado)
+                    revision = HistorialRevision.objects.create(creado_por=self.request.user.username,
+                                                                capacitacion=capacitacion, estado=estado)
 
                     if culminacion is not None:
                         culminacion = datetime.strptime(culminacion, '%Y-%m-%d')
@@ -1453,9 +1461,10 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
         self.get_certificados()
         return c
 
-    def generar_code_qr(self, persona_id = 0):
-        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4,)
-        qr.add_data(self.dominio + reverse('comprobacion:certificaciones', kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
+    def generar_code_qr(self, persona_id=0):
+        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4, )
+        qr.add_data(self.dominio + reverse('comprobacion:certificaciones',
+                                           kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
         qr.make(fit=True)
 
         img = qr.make_image(fill_color='black', back_color='white')
@@ -1478,7 +1487,8 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
             cabecera1 = Paragraph('UNIVERSIDAD NACIONAL SANTIAGO ANTÚNEZ DE MAYOLO', style=self.style5)
             cabecera2 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style5)
-            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
+            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)',
+                                  style=self.style5)
             w, h = cabecera1.wrap(460, 0)
             cabecera1.drawOn(self.canvas, 76, 735 - h)
             w, h = cabecera2.wrap(460, 0)
@@ -1504,9 +1514,9 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             contador_es_mayor = contador > len(self.array_participantes_aprobados)
 
             res_correlativo = CertEmitido.objects.filter(modulo__capacitacion=self.capacitacion,
-                                                         persona= p.persona if contador_es_mayor else p,
-                                                         cargo= p.cargo if contador_es_mayor else CARGO_CERT_EMITIDO_ASISTENTE,
-                                                         tipo= TIPO_CERT_EMITIDO_UNICO).first()
+                                                         persona=p.persona if contador_es_mayor else p,
+                                                         cargo=p.cargo if contador_es_mayor else CARGO_CERT_EMITIDO_ASISTENTE,
+                                                         tipo=TIPO_CERT_EMITIDO_UNICO).first()
             current_year = datetime.now().year
             if res_correlativo:
                 if len(res_correlativo.correlativo):
@@ -1518,14 +1528,17 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 n_correlativo = '{}-{}'.format(str(dni[0:5]).zfill(5), current_year)
 
             parrafo1 = Paragraph(self.cuerpo.format(
-                                    '{} en'.format(p.get_cargo_display().upper()) if contador_es_mayor else 'ASISTENTE y aprobado',
-                                    self.capacitacion.nombre.upper(),
-                                    ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
-                                    tipo_canal,
-                                    self.capacitacion.fecha_inicio.day, self.meses[self.capacitacion.fecha_inicio.month], self.capacitacion.fecha_inicio.year,
-                                    self.capacitacion.fecha_fin.day, self.meses[self.capacitacion.fecha_fin.month], self.capacitacion.fecha_fin.year,
-                                    self.horas_academicas
-                                ), style=self.style4)
+                '{} en'.format(p.get_cargo_display().upper()) if contador_es_mayor else 'ASISTENTE y aprobado',
+                self.capacitacion.nombre.upper(),
+                ', aprobado con ' + self.capacitacion.justificacion.upper() if len(
+                    self.capacitacion.justificacion) else '',
+                tipo_canal,
+                self.capacitacion.fecha_inicio.day, self.meses[self.capacitacion.fecha_inicio.month],
+                self.capacitacion.fecha_inicio.year,
+                self.capacitacion.fecha_fin.day, self.meses[self.capacitacion.fecha_fin.month],
+                self.capacitacion.fecha_fin.year,
+                self.horas_academicas
+            ), style=self.style4)
 
             # Nombre del participante
             fullname = p.persona.nombre_completo if contador_es_mayor else p.nombre_completo
@@ -1537,7 +1550,8 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             parrafo1.drawOn(self.canvas, 76, 430 - h)
 
             fecha_y_lugar = Paragraph(self.fecha_lugar.format(
-            self.fecha_culminado.day, self.meses[self.fecha_culminado.month], self.fecha_culminado.year), style=self.style_fecha_lugar)
+                self.fecha_culminado.day, self.meses[self.fecha_culminado.month], self.fecha_culminado.year),
+                style=self.style_fecha_lugar)
             w, h = fecha_y_lugar.wrap(460, 0)
             fecha_y_lugar.drawOn(self.canvas, 76, 330 - h)
 
@@ -1564,8 +1578,8 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 else:
                     tt.drawOn(self.canvas, 50 + cx, 225)
                 data4[0] = ['']
-                data4[1] = [''] #f.firmante
-                data4[2] = [''] #f.get_tipo_firma_display()
+                data4[1] = ['']  # f.firmante
+                data4[2] = ['']  # f.get_tipo_firma_display()
                 tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
                 tt.setStyle(self.table_style_firma)
                 w, h = tt.wrap(0, 0)
@@ -1878,9 +1892,10 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             self.get_certificados()
         return c
 
-    def generar_code_qr(self, persona_id = 0):
-        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4,)
-        qr.add_data(reverse(self.dominio + 'comprobacion:certificaciones', kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
+    def generar_code_qr(self, persona_id=0):
+        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4, )
+        qr.add_data(reverse(self.dominio + 'comprobacion:certificaciones',
+                            kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
         qr.make(fit=True)
 
         img = qr.make_image(fill_color='black', back_color='white')
@@ -1907,7 +1922,8 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
 
             cabecera1 = Paragraph('UNIVERSIDAD NACIONAL SANTIAGO ANTÚNEZ DE MAYOLO', style=self.style5)
             cabecera2 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style5)
-            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
+            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)',
+                                  style=self.style5)
             w, h = cabecera1.wrap(460, 0)
             cabecera1.drawOn(self.canvas, 76, 735 - h)
             w, h = cabecera2.wrap(460, 0)
@@ -1931,17 +1947,19 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
 
             parrafo1 = Paragraph(self.cuerpo.format(
-                                    '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
-                                    self.modulo.nombre.upper(),
-                                    ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
-                                    tipo_canal,
-                                    fecha_inicio.day, self.meses[fecha_inicio.month], fecha_inicio.year,
-                                    fecha_fin.day, self.meses[fecha_fin.month], fecha_fin.year,
-                                    self.horas_academicas
-                                ), style=self.style4)
+                '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
+                self.modulo.nombre.upper(),
+                ', aprobado con ' + self.capacitacion.justificacion.upper() if len(
+                    self.capacitacion.justificacion) else '',
+                tipo_canal,
+                fecha_inicio.day, self.meses[fecha_inicio.month], fecha_inicio.year,
+                fecha_fin.day, self.meses[fecha_fin.month], fecha_fin.year,
+                self.horas_academicas
+            ), style=self.style4)
 
             # Nombre del participante
-            nombre_completo = Paragraph('<b>{}</b>'.format(str(self.persona.nombre_completo).upper()), style=self.style_fullname)
+            nombre_completo = Paragraph('<b>{}</b>'.format(str(self.persona.nombre_completo).upper()),
+                                        style=self.style_fullname)
             w, h = nombre_completo.wrap(471, 0)
             nombre_completo.drawOn(self.canvas, 76, 460 - h)
 
@@ -1949,10 +1967,10 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             parrafo1.drawOn(self.canvas, 76, 430 - h)
 
             fecha_y_lugar = Paragraph(self.fecha_lugar.format(
-                            self.fecha_culminado.day,
-                            self.meses[self.fecha_culminado.month],
-                            self.fecha_culminado.year),
-                    style=self.style_fecha_lugar)
+                self.fecha_culminado.day,
+                self.meses[self.fecha_culminado.month],
+                self.fecha_culminado.year),
+                style=self.style_fecha_lugar)
             w, h = fecha_y_lugar.wrap(460, 0)
             fecha_y_lugar.drawOn(self.canvas, 76, 330 - h)
 
@@ -1980,9 +1998,9 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
                     tt.drawOn(self.canvas, 50 + cx, 225)
                 grado = dict(ABREVIATURA_GRADO).get(f.firmante.persona.grado_academico, '')
                 data4[0] = ['']
-                data4[1] = [''] #'{} {}'.format(grado, f.firmante).title()
-                data4[2] = [''] #f.get_tipo_firma_display()
-                data4[3] = [''] #f.firmante.ambito.upper()
+                data4[1] = ['']  # '{} {}'.format(grado, f.firmante).title()
+                data4[2] = ['']  # f.get_tipo_firma_display()
+                data4[3] = ['']  # f.firmante.ambito.upper()
                 tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
                 tt.setStyle(self.table_style_firma)
                 w, h = tt.wrap(0, 0)
@@ -2075,7 +2093,7 @@ class EnvioCertificadoPorModuloCorreo(View):
                                   <p style="color: #6C757D;">Saludos cordiales.</p>
                                 </div>
                               </body>
-                            </html>'''.format(self.persona.nombre_completo,self.modulo.nombre)
+                            </html>'''.format(self.persona.nombre_completo, self.modulo.nombre)
                 remitente = settings.EMAIL_HOST_USER
                 destinatarios = [self.persona.email]
                 email = EmailMessage(asunto, mensaje, remitente, destinatarios)
@@ -2163,9 +2181,10 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
         self.get_certificados()
         return c
 
-    def generar_code_qr(self, persona_id = 0):
-        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4,)
-        qr.add_data(reverse(self.dominio + 'comprobacion:certificaciones', kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
+    def generar_code_qr(self, persona_id=0):
+        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4, )
+        qr.add_data(reverse(self.dominio + 'comprobacion:certificaciones',
+                            kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
         qr.make(fit=True)
 
         img = qr.make_image(fill_color='black', back_color='white')
@@ -2188,7 +2207,8 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             self.canvas.drawImage(ImageReader(model_cert1), -4, -2, 620, 795)
             cabecera1 = Paragraph('UNIVERSIDAD NACIONAL SANTIAGO ANTÚNEZ DE MAYOLO', style=self.style5)
             cabecera2 = Paragraph('VICERRECTORADO ACADÉMICO', style=self.style5)
-            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)', style=self.style5)
+            cabecera3 = Paragraph('CONSEJO DE CAPACITACIÓN, ESPECIALIZACIÓN<br/>Y ACTUALIZACIÓN DOCENTE (CCEAD)',
+                                  style=self.style5)
             w, h = cabecera1.wrap(460, 0)
             cabecera1.drawOn(self.canvas, 76, 735 - h)
             w, h = cabecera2.wrap(460, 0)
@@ -2214,18 +2234,20 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             contador_es_mayor_aprobados = contador > len(self.array_participantes_aprobados)
 
             parrafo1 = Paragraph(self.cuerpo.format(
-                                    '{} en'.format(p.get_cargo_display().upper()) if contador_es_mayor_aprobados else 'ASISTENTE y aprobado',
-                                    self.modulo.nombre.upper(),
-                                    ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
-                                    tipo_canal,
-                                    self.fecha_inicio.day, self.meses[self.fecha_inicio.month], self.fecha_inicio.year,
-                                    self.fecha_fin.day, self.meses[self.fecha_fin.month], self.fecha_fin.year,
-                                    self.horas_academicas
-                                ), style=self.style4)
+                '{} en'.format(
+                    p.get_cargo_display().upper()) if contador_es_mayor_aprobados else 'ASISTENTE y aprobado',
+                self.modulo.nombre.upper(),
+                ', aprobado con ' + self.capacitacion.justificacion.upper() if len(
+                    self.capacitacion.justificacion) else '',
+                tipo_canal,
+                self.fecha_inicio.day, self.meses[self.fecha_inicio.month], self.fecha_inicio.year,
+                self.fecha_fin.day, self.meses[self.fecha_fin.month], self.fecha_fin.year,
+                self.horas_academicas
+            ), style=self.style4)
 
             res_correlativo = CertEmitido.objects.filter(modulo=self.modulo,
-                                                         persona= p.persona if contador_es_mayor_aprobados else p,
-                                                         cargo= p.cargo if contador_es_mayor_aprobados else CARGO_CERT_EMITIDO_ASISTENTE,
+                                                         persona=p.persona if contador_es_mayor_aprobados else p,
+                                                         cargo=p.cargo if contador_es_mayor_aprobados else CARGO_CERT_EMITIDO_ASISTENTE,
                                                          tipo=TIPO_CERT_EMITIDO_MODULO).first()
 
             current_year = datetime.now().year
@@ -2248,9 +2270,9 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             parrafo1.drawOn(self.canvas, 76, 430 - h)
 
             fecha_y_lugar = Paragraph(self.fecha_lugar.format(
-                        self.fecha_culminado.day,
-                        self.meses[self.fecha_culminado.month],
-                        self.fecha_culminado.year),
+                self.fecha_culminado.day,
+                self.meses[self.fecha_culminado.month],
+                self.fecha_culminado.year),
                 style=self.style_fecha_lugar)
             w, h = fecha_y_lugar.wrap(460, 0)
             fecha_y_lugar.drawOn(self.canvas, 76, 330 - h)
@@ -2278,8 +2300,8 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
                 else:
                     tt.drawOn(self.canvas, 50 + cx, 225)
                 data4[0] = ['']
-                data4[1] = [''] # f.firmante
-                data4[2] = [''] # f.get_tipo_firma_display()
+                data4[1] = ['']  # f.firmante
+                data4[2] = ['']  # f.get_tipo_firma_display()
                 tt = Table(data=data4, rowHeights=10, repeatCols=1, colWidths=230)
                 tt.setStyle(self.table_style_firma)
                 w, h = tt.wrap(0, 0)
