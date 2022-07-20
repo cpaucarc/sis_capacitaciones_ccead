@@ -824,14 +824,13 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         n_correlativo = self.correlativo
 
         parrafo1 = Paragraph(self.cuerpo.format(
-                                '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
-                                self.capacitacion.nombre.upper(),
-                                ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
-                                tipo_canal,
-                                self.capacitacion.fecha_inicio.day, self.meses[self.capacitacion.fecha_inicio.month], self.capacitacion.fecha_inicio.year,
-                                self.capacitacion.fecha_fin.day, self.meses[self.capacitacion.fecha_fin.month], self.capacitacion.fecha_fin.year,
-                                self.horas_academicas
-                            ), style=self.style4)
+                '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
+                self.capacitacion.nombre.upper(),
+                ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
+                tipo_canal,
+                self.obtener_fecha_capacitacion(self.capacitacion.fecha_inicio, self.capacitacion.fecha_fin),
+                self.horas_academicas
+            ), style=self.style4)
 
         # Nombre del participante
         nombre_completo = Paragraph('<b>{}</b>'.format(str(self.persona.nombre_completo).upper()), style=self.style_fullname)
@@ -1515,14 +1514,13 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 n_correlativo = '{}-{}'.format(str(dni[0:5]).zfill(5), current_year)
 
             parrafo1 = Paragraph(self.cuerpo.format(
-                                    '{} en'.format(p.get_cargo_display().upper()) if contador_es_mayor else 'ASISTENTE y aprobado',
-                                    self.capacitacion.nombre.upper(),
-                                    ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
-                                    tipo_canal,
-                                    self.capacitacion.fecha_inicio.day, self.meses[self.capacitacion.fecha_inicio.month], self.capacitacion.fecha_inicio.year,
-                                    self.capacitacion.fecha_fin.day, self.meses[self.capacitacion.fecha_fin.month], self.capacitacion.fecha_fin.year,
-                                    self.horas_academicas
-                                ), style=self.style4)
+                    '{} en'.format(p.get_cargo_display().upper()) if contador_es_mayor else 'ASISTENTE y aprobado',
+                    self.capacitacion.nombre.upper(),
+                    ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
+                    tipo_canal,
+                    self.obtener_fecha_capacitacion(self.capacitacion.fecha_inicio, self.capacitacion.fecha_fin),
+                    self.horas_academicas
+                ), style=self.style4)
 
             # Nombre del participante
             fullname = p.persona.nombre_completo if contador_es_mayor else p.nombre_completo
@@ -1928,14 +1926,13 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
 
             parrafo1 = Paragraph(self.cuerpo.format(
-                                    '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
-                                    self.modulo.nombre.upper(),
-                                    ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
-                                    tipo_canal,
-                                    fecha_inicio.day, self.meses[fecha_inicio.month], fecha_inicio.year,
-                                    fecha_fin.day, self.meses[fecha_fin.month], fecha_fin.year,
-                                    self.horas_academicas
-                                ), style=self.style4)
+                    '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
+                    self.modulo.nombre.upper(),
+                    ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
+                    tipo_canal,
+                    self.obtener_fecha_capacitacion(fecha_inicio, fecha_fin),
+                    self.horas_academicas
+                ), style=self.style4)
 
             # Nombre del participante
             nombre_completo = Paragraph('<b>{}</b>'.format(str(self.persona.nombre_completo).upper()), style=self.style_fullname)
@@ -2211,14 +2208,13 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             contador_es_mayor_aprobados = contador > len(self.array_participantes_aprobados)
 
             parrafo1 = Paragraph(self.cuerpo.format(
-                                    '{} en'.format(p.get_cargo_display().upper()) if contador_es_mayor_aprobados else 'ASISTENTE y aprobado',
-                                    self.modulo.nombre.upper(),
-                                    ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
-                                    tipo_canal,
-                                    self.fecha_inicio.day, self.meses[self.fecha_inicio.month], self.fecha_inicio.year,
-                                    self.fecha_fin.day, self.meses[self.fecha_fin.month], self.fecha_fin.year,
-                                    self.horas_academicas
-                                ), style=self.style4)
+                    '{} en'.format(p.get_cargo_display().upper()) if contador_es_mayor_aprobados else 'ASISTENTE y aprobado',
+                    self.modulo.nombre.upper(),
+                    ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
+                    tipo_canal,
+                    self.obtener_fecha_capacitacion(self.fecha_inicio, self.fecha_fin),
+                    self.horas_academicas
+                ), style=self.style4)
 
             res_correlativo = CertEmitido.objects.filter(modulo=self.modulo,
                                                          persona= p.persona if contador_es_mayor_aprobados else p,

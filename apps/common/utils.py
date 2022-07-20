@@ -98,10 +98,46 @@ class Utilidades:
             pass
         return path
 
+    def obtener_fecha_capacitacion(self, fecha_inicio, fecha_fin):
+        # Si la capacitación fue entre dos años, retornar fecha completo
+        if int(fecha_inicio.year) != int(fecha_fin.year):
+            return "del {} de {} de {} al {} de {} de {}".format(
+                fecha_inicio.day,
+                self.meses[fecha_inicio.month],
+                fecha_inicio.year,
+                fecha_fin.day,
+                self.meses[fecha_fin.month],
+                fecha_fin.year
+            )
+
+        # La capacitación fue en el mismo año
+        # Si la capacitación fue en diferentes meses, del mismo año
+        if int(fecha_inicio.month) != int(fecha_fin.month):
+            return "del {} de {} al {} de {} de {}".format(
+                fecha_inicio.day,
+                self.meses[fecha_inicio.month],
+                fecha_fin.day,
+                self.meses[fecha_fin.month],
+                fecha_inicio.year
+            )
+
+        # Si la capacitación fue en diferentes dias, del mismo mes y año
+        if int(fecha_inicio.day) != int(fecha_fin.day):
+            return "del {} al {} de {} de {}".format(
+                fecha_inicio.day,
+                fecha_fin.day,
+                self.meses[fecha_inicio.month],
+                fecha_inicio.year
+            )
+
+        # La capacitacion fue el mismo dia, mismo mes y año
+        return "el {} de {} de {}".format(fecha_inicio.day, self.meses[fecha_inicio.month], fecha_inicio.year)
+
+
 class Textos:
     def __init__(self):
         self.cuerpo = '''Por haber participado en calidad de {} el curso-taller de {}{}, llevado a cabo
-                        en forma {} del {} de {} de {} al {} de {} de {} con un total de {} horas académicas.'''
+                        en forma {} {} con un total de {} horas académicas.'''
         self.fecha_lugar = 'Huaraz, {} de {} de {}'
         self.articulo = 'El presente certificado y las firmas consignados en él han sido emitidos a través de medios digitales, al amparo de lo dispuesto en el artículo 141-A del Código Civil:<br/>"Artículo 141-A.- En los casos en que la ley establezca que la manifestación de voluntad debe hacerse a través de alguna formalidad expresa o requerida de firma, ésta podrá ser generada o comunicada a través de medios electrónicos, ópticos o cualquier otro análogo. Tratándose de instrumentos públicos, la autoridad competente deberá dejar constancia del medio empleado y conservar una versión íntegra para su ulterior consulta."'
         self.autenticidad = 'Verifique la autenticidad de este documento digital a través del código QR.'
