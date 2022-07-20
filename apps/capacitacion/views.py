@@ -994,29 +994,21 @@ class ListaCapacitacionValidarView(LoginRequiredMixin, BaseLogin, View):
         estado = kwargs.get('estado')
         inicio = kwargs.get('inicio')
         fin = kwargs.get('fin')
-        print('\nParametros:', estado, inicio, fin)
-        print('Kwars:', kwargs, '\n')
         capacitaciones = Capacitacion.objects.none()
-        print('\nCapacitaciones 1:', capacitaciones)
         if filtro:
             ''
         else:
             capacitaciones = Capacitacion.objects.all().exclude(
                 estado=ESTADO_PROYECTO_REGISTRADO).order_by('-fecha_creacion')
 
-        print('Capacitaciones 2:', capacitaciones)
-
         if estado and estado in ['por_validar', 'validado', 'cancelado', 'culminado', 'observado']:
             capacitaciones = capacitaciones.filter(estado=estado)
-        print('Capacitaciones 3:', capacitaciones)
         if inicio is not None:
             capacitaciones = capacitaciones.filter(fecha_inicio__gte=inicio)
 
-        print('Capacitaciones 4:', capacitaciones)
         if fin is not None:
             capacitaciones = capacitaciones.filter(fecha_fin__lte=fin)
 
-        print('Capacitaciones 5:', capacitaciones)
         if len(search_param) > 3:
             capacitaciones = capacitaciones.filter(nombre__icontains=search_param)
         draw, page = datatable_page(capacitaciones, request)
@@ -1884,6 +1876,8 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
             self.capacitacion = get_object_or_404(Capacitacion, pk=self.kwargs.get('id_capacitacion'))
         else:
             self.capacitacion = self.kwargs.get('capacitacion', None)
+        self.fecha_culminado = self.capacitacion.historialrevision_set.filter(
+                estado=ESTADO_PROYECTO_CULMINADO).last().fecha_creacion
         if not self.kwargs.get('persona', None):
             self.persona = get_object_or_404(Persona, pk=self.kwargs.get('id_persona'))
         else:
@@ -1926,7 +1920,7 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
 
     def generar_code_qr(self, persona_id=0):
         qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4, )
-        qr.add_data(reverse(self.dominio + 'comprobacion:certificaciones',
+        qr.add_data(self.dominio + reverse('comprobacion:certificaciones',
                             kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
         qr.make(fit=True)
 
@@ -2165,7 +2159,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
     modulo = None
     fecha_inicio = None
     fecha_fin = None
-    dominio = "ffff"
+    dominio = ""
 
     def dispatch(self, request, *args, **kwargs):
         self.dominio = request.build_absolute_uri('/')[:-1]
@@ -2173,6 +2167,8 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
         self.array_equipo_proyecto = []
         self.filename = 'Certificado-{}.pdf'.format(timezone.now().strftime('%d/%m/%Y-%H:%M:%S'))
         self.capacitacion = get_object_or_404(Capacitacion, pk=kwargs.get('id'))
+        self.fecha_culminado = self.capacitacion.historialrevision_set.filter(
+            estado=ESTADO_PROYECTO_CULMINADO).last().fecha_creacion
         self.modulo = get_object_or_404(Modulo, pk=kwargs.get('id_modulo'))
         self.fecha_inicio = DetalleAsistencia.objects.filter(acta_asistencia__modulo=self.modulo).first().fecha
         self.fecha_fin = DetalleAsistencia.objects.filter(acta_asistencia__modulo=self.modulo).last().fecha
@@ -2215,7 +2211,7 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
 
     def generar_code_qr(self, persona_id=0):
         qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4, )
-        qr.add_data(reverse(self.dominio + 'comprobacion:certificaciones',
+        qr.add_data(self.dominio + reverse('comprobacion:certificaciones',
                             kwargs={'capacitacion_id': self.capacitacion.id, 'persona_id': persona_id}))
         qr.make(fit=True)
 
