@@ -25,7 +25,7 @@ def comprobacion_certificado_view(request, capacitacion_id, persona_id):
         cargos_persona.append(cargo.cargo.upper())
 
     if es_participante:
-        cargos_persona.append("PARTICIPANTE")
+        cargos_persona.append("ASISTENTE")
 
     cantidad_cargos = len(cargos_persona)
 

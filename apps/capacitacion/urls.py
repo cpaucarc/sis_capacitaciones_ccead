@@ -27,7 +27,9 @@ urlpatterns = [
          name='crear_acta_asistencia'),
     path('ver-acta-asistencia/<int:id>/', VerActaAsistenciaView.as_view(), name='ver_acta_asistencia'),
     path('bandeja-validacion', BandejaValidacionView.as_view(), name='bandeja_validacion'),
-    path('listar-capacitacion-validar', ListaCapacitacionValidarView.as_view(), name='listar_capacitacion_validar'),
+
+    path('listar-capacitacion-validar/<str:inicio>/<str:fin>/<str:estado>', ListaCapacitacionValidarView.as_view(), name='listar_capacitacion_validar'),
+
     path('eliminar-acta/<str:pk>', EliminarActaView.as_view(), name='eliminar-acta'),
     path('observar-capacitacion/', ObservaCapacitacionView.as_view(), name='observar_capacitacion'),
     path('revisar-capacitacion/', RevisarCapacitacionView.as_view(), name='revisar_capacitacion'),

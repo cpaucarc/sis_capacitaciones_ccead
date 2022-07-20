@@ -16,6 +16,32 @@
     </div>
     <div class="panel-body">
       <div class="tab-content table-responsive">
+
+        <form style="display: flex; justify-content: end; background-color: #F9F9F9; padding: 15px; border-radius: 5px; margin-bottom: 20px;" id="formulario_filtro" method="GET">
+            <div class="form-group" style="display: inline-flex; align-items: center; gap: 5px; margin-right: 15px; margin-bottom: 0;">
+                <label for="inicio" style="white-space: nowrap">Inicio</label>
+                <input type="date" id="inicio" name="inicio" class="form-control form-control-sm" value="{{ view.inicio }}"/>
+            </div>
+            <div class="form-group" style="display: inline-flex; align-items: center; gap: 5px; margin-right: 25px; margin-bottom: 0;">
+                <label for="fin" style="white-space: nowrap">Finalización</label>
+                <input type="date" id="fin" name="fin" class="form-control form-control-sm" value="{{ view.fin }}"/>
+            </div>
+            <div class="form-group" style="display: inline-flex; align-items: center; gap: 5px; margin-right: 15px; margin-bottom: 0;">
+                <label for="estado">Estado</label>
+                <select name="estado" id="estado" class="form-control form-control-sm">
+                   <option value="todos" {% if view.estado == 'todos' %}selected="selected"{% endif %}>Todos</option>
+                   <option value="por_validar" {% if view.estado == 'por_validar' %}selected="selected"{% endif %}>Por validar</option>
+                   <option value="validado" {% if view.estado == 'validado' %}selected="selected"{% endif %}>Validado</option>""
+                   <option value="cancelado" {% if view.estado == 'cancelado' %}selected="selected"{% endif %}>Cancelado</option>
+                   <option value="culminado" {% if view.estado == 'culminado' %}selected="selected"{% endif %}>Culminado</option>
+                   <option value="observado" {% if view.estado == 'observado' %}selected="selected"{% endif %}>Observado</option>
+                   </select>
+            </div>
+            <button class="btn btn-danger" type="submit">
+                Filtrar
+            </button>
+        </form>
+
         <table class="table table-bordered table-hover table-striped table-responsive"
                id="lista-capacitacion-validar"
                style="width: 100%;">
@@ -76,7 +102,7 @@
   <script>
     var csrf_token = "{{ csrf_token }}";
     var buscarPersonaUrl = "{% url 'persona:buscar-persona' %}";
-    var urlListarCapacitacionValidar = "{% url 'capacitacion:listar_capacitacion_validar' %}";
+    var urlListarCapacitacionValidar = "{% url 'capacitacion:listar_capacitacion_validar' estado=view.estado inicio=view.inicio fin=view.fin %}";
     var urlObservarCapacitacion = "{% url 'capacitacion:observar_capacitacion' %}";
     var urlrevisarCapacitacion = "{% url 'capacitacion:revisar_capacitacion' %}";
     datatablesES = "{% static 'vendor/datatables/language/spanish.json' %}";
