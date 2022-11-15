@@ -43,7 +43,7 @@ class EstilosPdf:
         self.style_fecha_lugar.fontSize = 12
 
         self.style4 = getSampleStyleSheet()['Normal']
-        self.style4.fontSize = 12
+        self.style4.fontSize = 11
         self.style4.leading = 20
         self.style4.alignment = TA_JUSTIFY
         self.style4.padding = '20px'
@@ -59,8 +59,8 @@ class EstilosPdf:
         self.style_fullname.alignment = TA_CENTER
 
         self.style_art = getSampleStyleSheet()['Normal']
-        self.style_art.fontSize = 8
-        self.style_art.leading = 12
+        self.style_art.fontSize = 6.5
+        self.style_art.leading = 9
         self.style_art.alignment = TA_JUSTIFY
         self.style_art.padding = '15px'
 
@@ -136,7 +136,7 @@ class Utilidades:
 
 class Textos:
     def __init__(self):
-        self.cuerpo = '''Por haber participado en calidad de {} el curso-taller de {}{}, llevado a cabo
+        self.cuerpo = '''Por haber participado en calidad de {} el CURSO-TALLER de {}{}, llevado a cabo
                         en forma {} {} con un total de {} horas académicas.'''
         self.fecha_lugar = 'Huaraz, {} de {} de {}'
         self.articulo = 'El presente certificado y las firmas consignados en él han sido emitidos a través de medios digitales, al amparo de lo dispuesto en el artículo 141-A del Código Civil:<br/>"Artículo 141-A.- En los casos en que la ley establezca que la manifestación de voluntad debe hacerse a través de alguna formalidad expresa o requerida de firma, ésta podrá ser generada o comunicada a través de medios electrónicos, ópticos o cualquier otro análogo. Tratándose de instrumentos públicos, la autoridad competente deberá dejar constancia del medio empleado y conservar una versión íntegra para su ulterior consulta."'
