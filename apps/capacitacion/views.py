@@ -623,18 +623,21 @@ class VerActaAsistenciaView(LoginRequiredMixin, BaseLogin, TemplateView):
         for p in participantes:
             detalles = DetalleAsistencia.objects.filter(persona_id=p.persona_id, acta_asistencia=acta).order_by('fecha')
             array_a = []
+            array_agregados = []
             for d in detalles:
                 array_a.append(d.estado)
-                array_asistencia.append({
-                    'id_acta': d.acta_asistencia_id,
-                    'id_persona': d.persona_id,
-                    'numero_documento': p.persona.numero_documento,
-                    'apellido_paterno': p.persona.apellido_paterno,
-                    'apellido_materno': p.persona.apellido_materno,
-                    'nombres': p.persona.nombres,
-                    'estados': array_a,
-                    'resultado': acta.notaparticipante_set.filter(persona=p.persona).last().resultado,
-                })
+                if p.persona.numero_documento not in array_agregados:
+                    array_asistencia.append({
+                        'id_acta': d.acta_asistencia_id,
+                        'id_persona': d.persona_id,
+                        'numero_documento': p.persona.numero_documento,
+                        'apellido_paterno': p.persona.apellido_paterno,
+                        'apellido_materno': p.persona.apellido_materno,
+                        'nombres': p.persona.nombres,
+                        'estados': array_a,
+                        'resultado': acta.notaparticipante_set.filter(persona=p.persona).last().resultado,
+                    })
+                    array_agregados.append(p.persona.numero_documento)
         context.update({
             'acta': acta,
             'fechas_unicas': fechas_unicas,
@@ -669,18 +672,21 @@ class VerActaAsistenciaModalView(LoginRequiredMixin, BaseLogin, TemplateView):
         for p in participantes:
             detalles = DetalleAsistencia.objects.filter(persona_id=p.persona_id, acta_asistencia=acta).order_by('fecha')
             array_a = []
+            array_agregados = []
             for d in detalles:
                 array_a.append(d.estado)
-                array_asistencia.append({
-                    'id_acta': d.acta_asistencia_id,
-                    'id_persona': d.persona_id,
-                    'numero_documento': p.persona.numero_documento,
-                    'apellido_paterno': p.persona.apellido_paterno,
-                    'apellido_materno': p.persona.apellido_materno,
-                    'nombres': p.persona.nombres,
-                    'estados': array_a,
-                    'resultado': acta.notaparticipante_set.filter(persona=p.persona).last().resultado,
-                })
+                if p.persona.numero_documento not in array_agregados:
+                    array_asistencia.append({
+                        'id_acta': d.acta_asistencia_id,
+                        'id_persona': d.persona_id,
+                        'numero_documento': p.persona.numero_documento,
+                        'apellido_paterno': p.persona.apellido_paterno,
+                        'apellido_materno': p.persona.apellido_materno,
+                        'nombres': p.persona.nombres,
+                        'estados': array_a,
+                        'resultado': acta.notaparticipante_set.filter(persona=p.persona).last().resultado,
+                    })
+                    array_agregados.append(p.persona.numero_documento)
         context.update({
             'acta': acta,
             'es_permitido': permitido,
