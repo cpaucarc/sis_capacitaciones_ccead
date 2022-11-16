@@ -1564,10 +1564,11 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 ', aprobado con ' + self.capacitacion.justificacion.upper() if len(
                     self.capacitacion.justificacion) else '',
                 tipo_canal,
-                self.capacitacion.fecha_inicio.day, self.meses[self.capacitacion.fecha_inicio.month],
-                self.capacitacion.fecha_inicio.year,
-                self.capacitacion.fecha_fin.day, self.meses[self.capacitacion.fecha_fin.month],
-                self.capacitacion.fecha_fin.year,
+                # self.capacitacion.fecha_inicio.day, self.meses[self.capacitacion.fecha_inicio.month],
+                # self.capacitacion.fecha_inicio.year,
+                # self.capacitacion.fecha_fin.day, self.meses[self.capacitacion.fecha_fin.month],
+                # self.capacitacion.fecha_fin.year,
+                self.obtener_fecha_capacitacion(self.capacitacion.fecha_inicio, self.capacitacion.fecha_fin),
                 self.horas_academicas
             ), style=self.style4)
 
