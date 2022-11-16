@@ -822,7 +822,16 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         contador += 1
         n_correlativo = ''
 
-        tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
+        # tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
+
+        canales = {
+            'presencial': "de forma presencial",
+            'virtual': "de forma virtual",
+            'semipresencial': "de forma semipresencial",
+            'distancia': "a distancia",
+        }
+
+        tipo_canal = canales[self.capacitacion.canal_reunion] if self.capacitacion.canal_reunion in canales.keys() else canales["virtual"]
 
         res_correlativo = CertEmitido.objects.filter(modulo__capacitacion=self.capacitacion,
                                                      persona=self.persona,
@@ -833,9 +842,9 @@ class GeneraCertificadoPdf(LoginRequiredMixin, PdfCertView):
         n_correlativo = self.correlativo
 
         parrafo1 = Paragraph(self.cuerpo.format(
-            '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
-            self.capacitacion.nombre.upper(),
-            ', aprobado con ' + self.capacitacion.justificacion.upper() if len(self.capacitacion.justificacion) else '',
+            '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE',
+            self.capacitacion.nombre.upper().replace("\"","").replace("'",""),
+            ', aprobado con ' + self.capacitacion.justificacion if len(self.capacitacion.justificacion) else '',
             tipo_canal,
             # self.capacitacion.fecha_inicio.day, self.meses[self.capacitacion.fecha_inicio.month],
             # self.capacitacion.fecha_inicio.year,
@@ -1540,7 +1549,18 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
             contador += 1
             n_correlativo = ''
 
-            tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
+           # tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
+
+            canales = {
+                'presencial': "de forma presencial",
+                'virtual': "de forma virtual",
+                'semipresencial': "de forma semipresencial",
+                'distancia': "a distancia",
+            }
+
+            tipo_canal = canales[
+                self.capacitacion.canal_reunion] if self.capacitacion.canal_reunion in canales.keys() else canales[
+                "virtual"]
 
             contador_es_mayor = contador > len(self.array_participantes_aprobados)
 
@@ -1559,9 +1579,9 @@ class GenerarMultipleCertificadosPdfView(LoginRequiredMixin, PdfCertView):
                 n_correlativo = '{}-{}'.format(str(dni[0:5]).zfill(5), current_year)
 
             parrafo1 = Paragraph(self.cuerpo.format(
-                '{} en'.format(p.get_cargo_display().upper()) if contador_es_mayor else 'ASISTENTE y aprobado',
-                self.capacitacion.nombre.upper(),
-                ', aprobado con ' + self.capacitacion.justificacion.upper() if len(
+                '{} en'.format(p.get_cargo_display().upper()) if contador_es_mayor else 'ASISTENTE',
+                self.capacitacion.nombre.upper().replace("\"","").replace("'",""),
+                ', aprobado con ' + self.capacitacion.justificacion if len(
                     self.capacitacion.justificacion) else '',
                 tipo_canal,
                 # self.capacitacion.fecha_inicio.day, self.meses[self.capacitacion.fecha_inicio.month],
@@ -1978,12 +1998,23 @@ class GeneraCertificadoPdfPorModulo(LoginRequiredMixin, PdfCertView):
 
             contador += 1
 
-            tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
+            # tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
+
+            canales = {
+                'presencial': "de forma presencial",
+                'virtual': "de forma virtual",
+                'semipresencial': "de forma semipresencial",
+                'distancia': "a distancia",
+            }
+
+            tipo_canal = canales[
+                self.capacitacion.canal_reunion] if self.capacitacion.canal_reunion in canales.keys() else canales[
+                "virtual"]
 
             parrafo1 = Paragraph(self.cuerpo.format(
-                '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE y aprobado',
-                self.modulo.nombre.upper(),
-                ', aprobado con ' + self.capacitacion.justificacion.upper() if len(
+                '{} en'.format(self.miembro.get_cargo_display().upper()) if self.miembro else 'ASISTENTE',
+                self.modulo.nombre.upper().replace("\"","").replace("'",""),
+                ', aprobado con ' + self.capacitacion.justificacion if len(
                     self.capacitacion.justificacion) else '',
                 tipo_canal,
                 fecha_inicio.day, self.meses[fecha_inicio.month], fecha_inicio.year,
@@ -2265,15 +2296,24 @@ class GenerarMultipleCertificadosPorModPdfView(LoginRequiredMixin, PdfCertView):
             contador += 1
             n_correlativo = ''
 
-            tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
+            # tipo_canal = 'presencial' if 'PRESENCIAL' in self.capacitacion.canal_reunion.upper() else 'virtual'
 
+            canales = {
+                'presencial': "de forma presencial",
+                'virtual': "de forma virtual",
+                'semipresencial': "de forma semipresencial",
+                'distancia': "a distancia",
+            }
+
+            tipo_canal = canales[self.capacitacion.canal_reunion] if self.capacitacion.canal_reunion in canales.keys() else canales["virtual"]
+            
             contador_es_mayor_aprobados = contador > len(self.array_participantes_aprobados)
 
             parrafo1 = Paragraph(self.cuerpo.format(
                 '{} en'.format(
-                    p.get_cargo_display().upper()) if contador_es_mayor_aprobados else 'ASISTENTE y aprobado',
-                self.modulo.nombre.upper(),
-                ', aprobado con ' + self.capacitacion.justificacion.upper() if len(
+                    p.get_cargo_display().upper()) if contador_es_mayor_aprobados else 'ASISTENTE',
+                self.modulo.nombre.upper().replace("\"","").replace("'",""),
+                ', aprobado con ' + self.capacitacion.justificacion if len(
                     self.capacitacion.justificacion) else '',
                 tipo_canal,
                 self.fecha_inicio.day, self.meses[self.fecha_inicio.month], self.fecha_inicio.year,

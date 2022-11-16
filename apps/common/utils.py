@@ -136,8 +136,8 @@ class Utilidades:
 
 class Textos:
     def __init__(self):
-        self.cuerpo = '''Por haber participado en calidad de {} el CURSO-TALLER de {}{}, llevado a cabo
-                        en forma {} {} con un total de {} horas académicas.'''
+        self.cuerpo = '''Por haber participado en calidad de {} en el Curso-Taller "{}"{}, llevado a cabo
+                        {} {}, con una duración de {} horas académicas.'''
         self.fecha_lugar = 'Huaraz, {} de {} de {}'
         self.articulo = 'El presente certificado y las firmas consignados en él han sido emitidos a través de medios digitales, al amparo de lo dispuesto en el artículo 141-A del Código Civil:<br/>"Artículo 141-A.- En los casos en que la ley establezca que la manifestación de voluntad debe hacerse a través de alguna formalidad expresa o requerida de firma, ésta podrá ser generada o comunicada a través de medios electrónicos, ópticos o cualquier otro análogo. Tratándose de instrumentos públicos, la autoridad competente deberá dejar constancia del medio empleado y conservar una versión íntegra para su ulterior consulta."'
         self.autenticidad = 'Verifique la autenticidad de este documento digital a través del código QR.'
